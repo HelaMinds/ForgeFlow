@@ -7,7 +7,7 @@ ForgeFlow is a structured AI-powered system that turns vague ideas into clear, a
 ## Setup
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/HelaMinds/ForgeFlow.git
 cd helaminds
 npm install
 cp backend/.env.example backend/.env
