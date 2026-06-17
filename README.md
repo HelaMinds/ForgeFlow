@@ -75,3 +75,70 @@ ForgeFlow does not decide if an idea is good or bad. It helps users explore opti
 ## Goal
 
 Help users move from **idea → clarity → execution** using structured AI reasoning.
+
+---
+
+## Project Structure
+
+```
+forgeflow/
+│
+├── frontend/              # Next.js UI
+│   ├── app/
+│   ├── components/
+│   └── lib/
+│
+├── backend/               # API + LangGraph logic
+│   ├── agents/
+│   ├── routes/
+│   ├── services/
+│   ├── graph/
+│   └── server.js
+│
+├── shared/                # Shared types/schemas
+│
+├── docs/                  # Notes + demo + prompts
+│
+├── README.md
+└── package.json
+```
+
+### Backend
+
+```
+backend/
+├── agents/
+│   ├── clarifier.js
+│   ├── planner.js
+│   ├── stressTest.js
+│   └── synthesizer.js
+├── routes/
+│   └── idea.js
+├── graph/
+│   └── flow.js
+└── server.js
+```
+
+### Frontend
+
+```
+frontend/
+├── app/
+│   ├── page.js
+│   └── result/page.js
+├── components/
+│   ├── InputBox.js
+│   ├── PlanCard.js
+│   └── RiskCard.js
+└── lib/
+    └── api.js
+```
+
+---
+
+## Getting Started
+
+1. Install dependencies: `npm install`
+2. Copy `backend/.env.example` to `backend/.env` and add your OpenAI API key
+3. Run both apps: `npm run dev`
+4. Open `http://localhost:3000`
