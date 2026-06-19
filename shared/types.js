@@ -1,10 +1,17 @@
 /**
+ * @typedef {Object} UserAnswer
+ * @property {string} question
+ * @property {string} answer
+ */
+
+/**
  * @typedef {Object} ClarifiedIdea
  * @property {string} originalIdea
  * @property {string} summary
  * @property {string[]} goals
  * @property {string[]} constraints
  * @property {string[]} openQuestions
+ * @property {UserAnswer[]} [userAnswers]
  */
 
 /**
