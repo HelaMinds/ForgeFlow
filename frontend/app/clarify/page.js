@@ -1,0 +1,103 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import ClarifyForm from '../../components/ClarifyForm';
+import { generatePlan } from '../../lib/api';
+
+export default function ClarifyPage() {
+  const router = useRouter();
+  const [clarifyData, setClarifyData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const stored = sessionStorage.getItem('forgeflow-clarify');
+    if (stored) {
+      setClarifyData(JSON.parse(stored));
+    }
+  }, []);
+
+  async function handleSubmit(answers) {
+    setLoading(true);
+    setError('');
+
+    try {
+      const result = await generatePlan({
+        idea: clarifyData.idea,
+        answers,
+        clarified: clarifyData.clarified,
+      });
+      sessionStorage.setItem('forgeflow-result', JSON.stringify(result));
+      sessionStorage.removeItem('forgeflow-clarify');
+      router.push('/result');
+    } catch (err) {
+      setError(err.message || 'Something went wrong');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (!clarifyData) {
+    return (
+      <main className="mx-auto max-w-3xl px-6 py-16">
+        <p className="text-slate-400">No idea to clarify.</p>
+        <Link href="/" className="mt-4 inline-block text-orange-400 hover:underline">
+          Start over
+        </Link>
+      </main>
+    );
+  }
+
+  const { idea, clarified } = clarifyData;
+  const questions = clarified.questions?.length
+    ? clarified.questions
+    : (clarified.openQuestions || []).map((text, index) => ({
+        id: `q${index + 1}`,
+        text,
+      }));
+
+  return (
+    <main className="mx-auto max-w-3xl px-6 py-16">
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <p className="text-sm uppercase tracking-widest text-orange-400">Clarify</p>
+          <h1 className="mt-2 text-3xl font-bold">Answer a few questions</h1>
+          <p className="mt-4 text-slate-400">
+            ForgeFlow needs your input before building a plan. You stay in control of the
+            decisions.
+          </p>
+        </div>
+        <Link href="/" className="text-sm text-slate-400 hover:text-white">
+          Back
+        </Link>
+      </div>
+
+      <section className="mb-8 rounded-xl border border-slate-800 bg-slate-900 p-6">
+        <h2 className="mb-2 text-lg font-semibold">Your idea</h2>
+        <p className="text-slate-300">{idea}</p>
+        {clarified.summary ? (
+          <p className="mt-4 text-sm text-slate-400">{clarified.summary}</p>
+        ) : null}
+      </section>
+
+      {clarified.goals?.length ? (
+        <section className="mb-8">
+          <h2 className="mb-3 text-sm font-medium uppercase tracking-widest text-slate-500">
+            Detected goals
+          </h2>
+          <ul className="list-disc space-y-1 pl-5 text-sm text-slate-400">
+            {clarified.goals.map((goal) => (
+              <li key={goal}>{goal}</li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      <ClarifyForm questions={questions} onSubmit={handleSubmit} loading={loading} />
+
+      {error ? <p className="mt-4 text-sm text-red-400">{error}</p> : null}
+    </main>
+  );
+}

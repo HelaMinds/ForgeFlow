@@ -18,12 +18,22 @@ async function request(path, options) {
   return data;
 }
 
-export async function submitIdea(idea) {
-  return request('/api/idea', {
+export async function clarifyIdea(idea) {
+  return request('/api/idea/clarify', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ idea }),
+  });
+}
+
+export async function generatePlan({ idea, answers, clarified }) {
+  return request('/api/idea/plan', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ idea, answers, clarified }),
   });
 }

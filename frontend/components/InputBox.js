@@ -25,7 +25,7 @@ export default function InputBox({ onSubmit, loading }) {
         disabled={loading || !idea.trim()}
         className="rounded-lg bg-orange-500 px-5 py-3 font-medium text-white transition hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {loading ? 'Forging plan...' : 'Generate Plan'}
+        {loading ? 'Analyzing idea...' : 'Continue'}
       </button>
     </form>
   );

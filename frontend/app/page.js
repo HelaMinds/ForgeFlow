@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import InputBox from '../components/InputBox';
-import { submitIdea } from '../lib/api';
+import { clarifyIdea } from '../lib/api';
 
 export default function HomePage() {
   const router = useRouter();
@@ -15,9 +15,9 @@ export default function HomePage() {
     setError('');
 
     try {
-      const result = await submitIdea(idea);
-      sessionStorage.setItem('forgeflow-result', JSON.stringify(result));
-      router.push('/result');
+      const result = await clarifyIdea(idea);
+      sessionStorage.setItem('forgeflow-clarify', JSON.stringify(result));
+      router.push('/clarify');
     } catch (err) {
       setError(err.message || 'Something went wrong');
     } finally {
