@@ -3,21 +3,76 @@ const { createPlan } = require('../agents/planner');
 const { stressTestPlan } = require('../agents/stressTest');
 const { synthesizePlan } = require('../agents/synthesizer');
 
-async function runForgeFlow(idea) {
-  const clarified = await clarifyIdea(idea);
-  const plan = await createPlan(clarified);
-  const stressTest = await stressTestPlan({ clarified, plan });
-  const finalPlan = await synthesizePlan({ clarified, plan, stressTest });
+function mergeAnswersIntoClarified(clarified, answers) {
+  const questionById = new Map(
+    (clarified.questions || []).map((question) => [question.id, question.text]),
+  );
+
+  const userAnswers = Object.entries(answers)
+    .map(([key, answer]) => {
+      const trimmedAnswer = typeof answer === 'string' ? answer.trim() : '';
+      const questionText = questionById.get(key) || key.trim();
+
+      return {
+        id: questionById.has(key) ? key : key.trim(),
+        question: questionText,
+        answer: trimmedAnswer,
+      };
+    })
+    .filter((entry) => entry.question && entry.answer);
+
+  const answerConstraints = userAnswers.map(
+    (entry) => `${entry.question}: ${entry.answer}`,
+  );
+
+  return {
+    ...clarified,
+    userAnswers,
+    constraints: [...(clarified.constraints || []), ...answerConstraints],
+    questions: [],
+    openQuestions: [],
+  };
+}
+
+async function runClarify({ idea, ideaType }) {
+  const clarified = await clarifyIdea(idea, ideaType);
 
   return {
     idea,
+    ideaType: ideaType || null,
     clarified,
+  };
+}
+
+async function runPlanFromAnswers({ idea, answers, clarified }) {
+  const baseClarified = clarified || (await clarifyIdea(idea));
+  const enrichedClarified = mergeAnswersIntoClarified(baseClarified, answers);
+  const plan = await createPlan(enrichedClarified);
+  const stressTest = await stressTestPlan({ clarified: enrichedClarified, plan });
+  const finalPlan = await synthesizePlan({
+    clarified: enrichedClarified,
+    plan,
+    stressTest,
+  });
+
+  return {
+    idea,
+    ideaType: enrichedClarified.ideaType || null,
+    clarified: enrichedClarified,
     plan,
     stressTest,
     finalPlan,
   };
 }
 
+async function runForgeFlow(idea) {
+  const { clarified } = await runClarify({ idea });
+  return runPlanFromAnswers({ idea, answers: {}, clarified });
+}
+
 module.exports = {
+  mergeAnswersIntoClarified,
+  runClarify,
+  runPlanFromAnswers,
   runForgeFlow,
 };

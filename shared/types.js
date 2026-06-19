@@ -1,10 +1,27 @@
 /**
+ * @typedef {Object} ClarifierQuestion
+ * @property {string} id
+ * @property {string} text
+ * @property {'text' | 'choice'} [type]
+ * @property {string[]} [options]
+ */
+
+/**
+ * @typedef {Object} UserAnswer
+ * @property {string} id
+ * @property {string} question
+ * @property {string} answer
+ */
+
+/**
  * @typedef {Object} ClarifiedIdea
  * @property {string} originalIdea
  * @property {string} summary
  * @property {string[]} goals
  * @property {string[]} constraints
+ * @property {ClarifierQuestion[]} questions
  * @property {string[]} openQuestions
+ * @property {UserAnswer[]} [userAnswers]
  */
 
 /**

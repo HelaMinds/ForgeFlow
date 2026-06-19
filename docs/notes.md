@@ -9,6 +9,6 @@
 
 ## Development Notes
 
-- Backend runs on port `4000` by default.
-- Frontend expects the API at `NEXT_PUBLIC_API_URL` (defaults to `http://localhost:4000`).
+- Backend runs on port `4000` by default (`PORT` in `backend/.env`).
+- Frontend proxies `/api/*` to the backend via `BACKEND_URL` in `frontend/.env.local`.
 - Each agent should return structured JSON for predictable downstream parsing.
