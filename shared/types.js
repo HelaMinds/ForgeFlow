@@ -1,5 +1,12 @@
 /**
+ * @typedef {Object} ClarifierQuestion
+ * @property {string} id
+ * @property {string} text
+ */
+
+/**
  * @typedef {Object} UserAnswer
+ * @property {string} id
  * @property {string} question
  * @property {string} answer
  */
@@ -10,6 +17,7 @@
  * @property {string} summary
  * @property {string[]} goals
  * @property {string[]} constraints
+ * @property {ClarifierQuestion[]} questions
  * @property {string[]} openQuestions
  * @property {UserAnswer[]} [userAnswers]
  */

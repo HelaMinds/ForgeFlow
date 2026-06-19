@@ -4,16 +4,27 @@ const { stressTestPlan } = require('../agents/stressTest');
 const { synthesizePlan } = require('../agents/synthesizer');
 
 function mergeAnswersIntoClarified(clarified, answers) {
+  const questionById = new Map(
+    (clarified.questions || []).map((question) => [question.id, question.text]),
+  );
+
   const userAnswers = Object.entries(answers)
-    .map(([question, answer]) => ({
-      question: question.trim(),
-      answer: typeof answer === 'string' ? answer.trim() : '',
-    }))
+    .map(([key, answer]) => {
+      const trimmedAnswer = typeof answer === 'string' ? answer.trim() : '';
+      const questionText = questionById.get(key) || key.trim();
+
+      return {
+        id: questionById.has(key) ? key : key.trim(),
+        question: questionText,
+        answer: trimmedAnswer,
+      };
+    })
     .filter((entry) => entry.question && entry.answer);
 
   return {
     ...clarified,
     userAnswers,
+    questions: [],
     openQuestions: [],
   };
 }

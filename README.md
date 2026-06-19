@@ -19,6 +19,12 @@ Add your OpenAI API key to `backend/.env`:
 OPENAI_API_KEY=your_key_here
 ```
 
+Copy the frontend env file and set the backend URL to match `PORT` in `backend/.env`:
+
+```bash
+cp frontend/.env.example frontend/.env.local
+```
+
 ## Run
 
 ```bash
