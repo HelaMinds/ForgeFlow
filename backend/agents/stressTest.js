@@ -2,6 +2,10 @@ const { runStructuredPrompt } = require('../services/llm');
 
 const SYSTEM_PROMPT = `You are the Stress Tester agent in ForgeFlow.
 Challenge the plan adversarially and surface uncertainty.
+
+Treat userAnswers in clarified context as confirmed by the user — do not list them as weak
+assumptions. Focus risks on gaps that remain after the user's answers.
+
 Return JSON with keys: risks, weakAssumptions, failureModes.
 risks must be an array of objects with title, description, severity (low|medium|high), and mitigation.`;
 

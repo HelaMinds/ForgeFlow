@@ -21,9 +21,14 @@ function mergeAnswersIntoClarified(clarified, answers) {
     })
     .filter((entry) => entry.question && entry.answer);
 
+  const answerConstraints = userAnswers.map(
+    (entry) => `${entry.question}: ${entry.answer}`,
+  );
+
   return {
     ...clarified,
     userAnswers,
+    constraints: [...(clarified.constraints || []), ...answerConstraints],
     questions: [],
     openQuestions: [],
   };
@@ -52,6 +57,7 @@ async function runPlanFromAnswers({ idea, answers, clarified }) {
 
   return {
     idea,
+    ideaType: enrichedClarified.ideaType || null,
     clarified: enrichedClarified,
     plan,
     stressTest,

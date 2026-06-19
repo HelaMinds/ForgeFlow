@@ -6,7 +6,7 @@ You are a clarifier agent. Turn vague ideas into structured goals, constraints, 
 
 ## Planner
 
-You are a planner agent. Build a realistic phased execution plan with assumptions and dependencies. Return JSON only.
+You are a planner agent. Build a realistic phased execution plan using confirmed user answers and constraints — not guesses. Return JSON only.
 
 ## Stress Tester
 
