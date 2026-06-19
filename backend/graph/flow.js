@@ -29,11 +29,12 @@ function mergeAnswersIntoClarified(clarified, answers) {
   };
 }
 
-async function runClarify(idea) {
-  const clarified = await clarifyIdea(idea);
+async function runClarify({ idea, ideaType }) {
+  const clarified = await clarifyIdea(idea, ideaType);
 
   return {
     idea,
+    ideaType: ideaType || null,
     clarified,
   };
 }
@@ -59,7 +60,7 @@ async function runPlanFromAnswers({ idea, answers, clarified }) {
 }
 
 async function runForgeFlow(idea) {
-  const { clarified } = await runClarify(idea);
+  const { clarified } = await runClarify({ idea });
   return runPlanFromAnswers({ idea, answers: {}, clarified });
 }
 

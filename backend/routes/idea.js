@@ -12,7 +12,10 @@ router.post('/clarify', async (req, res, next) => {
       return res.status(400).json({ error: validation.error });
     }
 
-    const result = await runClarify(validation.idea);
+    const result = await runClarify({
+      idea: validation.idea,
+      ideaType: validation.ideaType,
+    });
     return res.json(result);
   } catch (error) {
     return next(error);

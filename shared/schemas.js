@@ -8,12 +8,24 @@ function isStringArray(value) {
   return Array.isArray(value) && value.every(isNonEmptyString);
 }
 
+const { IDEA_TYPE_IDS } = require('./ideaTypes');
+
 function validateIdeaRequest(body) {
   if (!body || !isNonEmptyString(body.idea)) {
     return { valid: false, error: 'idea is required and must be a non-empty string' };
   }
 
-  return { valid: true, idea: body.idea.trim() };
+  const ideaType = body.ideaType?.trim();
+
+  if (ideaType && !IDEA_TYPE_IDS.includes(ideaType)) {
+    return { valid: false, error: 'ideaType must be startup, class_project, or side_hustle' };
+  }
+
+  return {
+    valid: true,
+    idea: body.idea.trim(),
+    ideaType: ideaType || undefined,
+  };
 }
 
 function normalizeAnswers(answers) {

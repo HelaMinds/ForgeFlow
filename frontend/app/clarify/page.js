@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ClarifyForm from '../../components/ClarifyForm';
-import { generatePlan } from '../../lib/api';
+import { generatePlan, getIdeaTypeLabel } from '../../lib/api';
 
 export default function ClarifyPage() {
   const router = useRouter();
@@ -50,12 +50,13 @@ export default function ClarifyPage() {
     );
   }
 
-  const { idea, clarified } = clarifyData;
+  const { idea, ideaType, clarified } = clarifyData;
   const questions = clarified.questions?.length
     ? clarified.questions
     : (clarified.openQuestions || []).map((text, index) => ({
         id: `q${index + 1}`,
         text,
+        type: 'text',
       }));
 
   return (
@@ -75,7 +76,14 @@ export default function ClarifyPage() {
       </div>
 
       <section className="mb-8 rounded-xl border border-slate-800 bg-slate-900 p-6">
-        <h2 className="mb-2 text-lg font-semibold">Your idea</h2>
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          <h2 className="text-lg font-semibold">Your idea</h2>
+          {ideaType ? (
+            <span className="rounded-full bg-orange-500/10 px-3 py-1 text-xs font-medium text-orange-300">
+              {getIdeaTypeLabel(ideaType)}
+            </span>
+          ) : null}
+        </div>
         <p className="text-slate-300">{idea}</p>
         {clarified.summary ? (
           <p className="mt-4 text-sm text-slate-400">{clarified.summary}</p>
@@ -90,6 +98,19 @@ export default function ClarifyPage() {
           <ul className="list-disc space-y-1 pl-5 text-sm text-slate-400">
             {clarified.goals.map((goal) => (
               <li key={goal}>{goal}</li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {clarified.constraints?.length ? (
+        <section className="mb-8">
+          <h2 className="mb-3 text-sm font-medium uppercase tracking-widest text-slate-500">
+            Known constraints
+          </h2>
+          <ul className="list-disc space-y-1 pl-5 text-sm text-slate-400">
+            {clarified.constraints.map((constraint) => (
+              <li key={constraint}>{constraint}</li>
             ))}
           </ul>
         </section>

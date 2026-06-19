@@ -10,13 +10,20 @@ export default function HomePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  async function handleSubmit(idea) {
+  async function handleSubmit({ idea, ideaType }) {
     setLoading(true);
     setError('');
 
     try {
-      const result = await clarifyIdea(idea);
-      sessionStorage.setItem('forgeflow-clarify', JSON.stringify(result));
+      const result = await clarifyIdea({ idea, ideaType });
+      sessionStorage.setItem(
+        'forgeflow-clarify',
+        JSON.stringify({
+          idea: result.idea,
+          ideaType: result.ideaType,
+          clarified: result.clarified,
+        }),
+      );
       router.push('/clarify');
     } catch (err) {
       setError(err.message || 'Something went wrong');

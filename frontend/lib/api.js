@@ -1,3 +1,13 @@
+export const IDEA_TYPES = [
+  { id: 'startup', label: 'Startup' },
+  { id: 'class_project', label: 'Class project' },
+  { id: 'side_hustle', label: 'Side hustle' },
+];
+
+export function getIdeaTypeLabel(id) {
+  return IDEA_TYPES.find((type) => type.id === id)?.label || id;
+}
+
 async function request(path, options) {
   let response;
 
@@ -18,13 +28,13 @@ async function request(path, options) {
   return data;
 }
 
-export async function clarifyIdea(idea) {
+export async function clarifyIdea({ idea, ideaType }) {
   return request('/api/idea/clarify', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ idea }),
+    body: JSON.stringify({ idea, ideaType }),
   });
 }
 

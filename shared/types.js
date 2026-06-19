@@ -2,6 +2,8 @@
  * @typedef {Object} ClarifierQuestion
  * @property {string} id
  * @property {string} text
+ * @property {'text' | 'choice'} [type]
+ * @property {string[]} [options]
  */
 
 /**
