@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import PlanCard from '../../components/PlanCard';
+import PlanHero from '../../components/PlanHero';
+import PlanOverview from '../../components/PlanOverview';
+import TimelineFlow from '../../components/TimelineFlow';
 import RiskCard from '../../components/RiskCard';
 import { getIdeaTypeLabel } from '../../lib/api';
 
@@ -28,91 +30,71 @@ export default function ResultPage() {
   }
 
   const { idea, finalPlan, clarified, stressTest } = result;
+  const ideaTypeLabel = clarified.ideaType ? getIdeaTypeLabel(clarified.ideaType) : null;
   const userAnswers = clarified.userAnswers || [];
+  const phaseCount = finalPlan.roadmap?.length || 0;
+  const totalDuration = finalPlan.timeline?.totalDuration;
 
   return (
-    <main className="mx-auto max-w-4xl px-6 py-16">
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <p className="text-sm uppercase tracking-widest text-orange-400">Final Plan</p>
-          <h1 className="mt-2 text-3xl font-bold">{finalPlan.summary}</h1>
-        </div>
-        <Link href="/" className="text-sm text-slate-400 hover:text-white">
-          New idea
-        </Link>
+    <main className="mx-auto max-w-4xl px-6 py-10 sm:py-14">
+      <PlanHero
+        finalPlan={finalPlan}
+        clarified={clarified}
+        idea={idea}
+        ideaTypeLabel={ideaTypeLabel}
+        userAnswers={userAnswers}
+        phaseCount={phaseCount}
+        totalDuration={totalDuration}
+      />
+
+      <div className="mt-10">
+        <PlanOverview
+          idea={idea}
+          ideaTypeLabel={ideaTypeLabel}
+          clarified={clarified}
+          finalPlan={finalPlan}
+        />
       </div>
 
-      <p className="mb-8 rounded-xl border border-slate-700 bg-slate-900/80 px-4 py-3 text-sm text-slate-300">
-        Plan based on your answers — you still decide whether to pursue this.
-      </p>
-
-      {idea ? (
-        <section className="mb-8 rounded-xl border border-slate-800 bg-slate-900 p-6">
-          <div className="mb-2 flex flex-wrap items-center gap-2">
-            <h2 className="text-lg font-semibold">Original idea</h2>
-            {clarified.ideaType ? (
-              <span className="rounded-full bg-orange-500/10 px-3 py-1 text-xs font-medium text-orange-300">
-                {getIdeaTypeLabel(clarified.ideaType)}
-              </span>
-            ) : null}
-          </div>
-          <p className="text-slate-300">{idea}</p>
-        </section>
-      ) : null}
-
-      {userAnswers.length ? (
-        <section className="mb-8 rounded-xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="mb-4 text-lg font-semibold">Your answers</h2>
-          <dl className="space-y-4">
-            {userAnswers.map((entry) => (
-              <div key={entry.id}>
-                <dt className="text-sm text-slate-400">{entry.question}</dt>
-                <dd className="mt-1 text-slate-100">{entry.answer}</dd>
-              </div>
-            ))}
-          </dl>
-        </section>
-      ) : null}
-
-      <section className="mb-8 rounded-xl border border-slate-800 bg-slate-900 p-6">
-        <h2 className="mb-2 text-lg font-semibold">Clarified idea</h2>
-        <p className="text-slate-300">{clarified.summary}</p>
-        {clarified.goals?.length ? (
-          <ul className="mt-4 list-disc space-y-1 pl-5 text-sm text-slate-400">
-            {clarified.goals.map((goal) => (
-              <li key={goal}>{goal}</li>
-            ))}
-          </ul>
-        ) : null}
-      </section>
-
-      <section className="mb-8 grid gap-4 md:grid-cols-2">
-        {finalPlan.roadmap.map((step, index) => (
-          <PlanCard key={`${step.title}-${index}`} step={step} index={index + 1} />
-        ))}
-      </section>
-
-      <section className="mb-8">
-        <h2 className="mb-4 text-xl font-semibold">Risks</h2>
-        <div className="grid gap-4 md:grid-cols-2">
-          {finalPlan.risks.map((risk, index) => (
-            <RiskCard key={`${risk.title}-${index}`} risk={risk} />
-          ))}
+      <section className="mt-12">
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold">Step-by-step timeline</h2>
+          <p className="mt-2 text-sm text-slate-400">
+            Follow these phases in order. Each step includes concrete tasks and a milestone to hit
+            before moving on.
+          </p>
         </div>
+        <TimelineFlow roadmap={finalPlan.roadmap} timeline={finalPlan.timeline} />
       </section>
 
-      <section className="rounded-xl border border-orange-500/30 bg-orange-500/10 p-6">
-        <h2 className="mb-2 text-lg font-semibold text-orange-300">First action</h2>
+      {finalPlan.risks?.length ? (
+        <section className="mt-12">
+          <h2 className="mb-4 text-xl font-semibold">Risks & mitigations</h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            {finalPlan.risks.map((risk, index) => (
+              <RiskCard key={`${risk.title}-${index}`} risk={risk} />
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      <section className="mt-12 rounded-xl border border-orange-500/30 bg-orange-500/10 p-6">
+        <h2 className="mb-2 text-lg font-semibold text-orange-300">Start here</h2>
         <p className="text-slate-100">{finalPlan.firstAction}</p>
         {finalPlan.confidenceNote ? (
           <p className="mt-4 text-sm text-slate-400">{finalPlan.confidenceNote}</p>
         ) : null}
         {stressTest.weakAssumptions?.length ? (
-          <div className="mt-4">
-            <p className="text-sm font-medium text-slate-300">Weak assumptions</p>
-            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-400">
+          <div className="mt-4 border-t border-orange-500/20 pt-4">
+            <p className="text-sm font-medium text-slate-300">Watch out for weak assumptions</p>
+            <ul className="mt-2 space-y-1">
               {stressTest.weakAssumptions.map((item) => (
-                <li key={item}>{item}</li>
+                <li key={item} className="flex items-start gap-2 text-sm text-slate-400">
+                  <span aria-hidden="true" className="mt-1.5 text-orange-400/70">
+                    •
+                  </span>
+                  {item}
+                </li>
               ))}
             </ul>
           </div>
