@@ -1,5 +1,6 @@
 const { runStructuredPrompt } = require('../services/llm');
 const { getIdeaTypeLabel } = require('../../shared/ideaTypes');
+const { inferDefaultOptions } = require('../../shared/questionUtils');
 
 const SYSTEM_PROMPT = `You are the Clarifier agent in ForgeFlow.
 Turn vague ideas into structured context before execution planning.
@@ -10,40 +11,47 @@ Return JSON with keys: summary, goals, constraints, questions.
 - goals: array of concise goal strings
 - constraints: array of known or inferred constraints
 - questions: array of exactly 3-5 objects, each with:
-  - id: short snake_case key (e.g. "target_user", "budget", "timeline")
+  - id: short snake_case key (e.g. "target_market_size", "pricing_strategy", "competitors", "mvp_features")
   - text: one specific question the user must answer
-  - type: "text" or "choice"
-  - options: array of 2-5 short answer choices (required when type is "choice")
+  - type: must always be "choice" — never "text"
+  - options: array of exactly 4-5 concrete, mutually exclusive answer choices tailored to the idea (required)
 
 Question rules:
-- Ask exactly 3-5 questions. Each must be concrete and answerable in 1-2 sentences.
-- Do NOT ask vague questions like "Tell me more about your idea" or "What do you want?"
-- Target gaps that would change the plan: audience, budget, timeline, skills, location, success metric, scope.
-- Use type "choice" for timeline, budget, experience level, or scope when a small fixed set of answers fits.
-- Use type "text" when the answer needs specific detail only the user can provide.`;
+- Ask exactly 3-5 questions. Every question MUST be type "choice" with 4-5 selectable options.
+- Do NOT use free-text questions. Do NOT ask vague questions like "Tell me more about your idea".
+- Target gaps that would change the plan: target market size, pricing, competitors, MVP features, budget, timeline, skills, success metric, scope.
+- Each options array must contain realistic, specific choices — not "Option 1/2/3". Example for market size: ["Under 10k businesses", "10k–100k", "100k–1M", "Over 1M"].
+- Example for pricing: ["Under $10/month", "$10–$30/month", "$30–$99/month", "Freemium + paid tiers"].
+- Example for competitors: list 4-5 real or plausible competitor categories/names relevant to the idea domain.
+- Example for MVP features: ["Invoicing only", "Invoicing + expenses", "Full accounting suite", "Integrations-first MVP"].`;
 
 function normalizeQuestions(result) {
   const rawQuestions = Array.isArray(result.questions) && result.questions.length > 0
     ? result.questions
-    : (result.openQuestions || []).map((text) => ({ text }));
+    : (result.openQuestions || []).map((text) => ({ text, type: 'choice' }));
 
   return rawQuestions
     .map((question, index) => {
       const text = typeof question.text === 'string' ? question.text.trim() : '';
-      const options = Array.isArray(question.options)
+      const id = typeof question.id === 'string' && question.id.trim()
+        ? question.id.trim()
+        : `q${index + 1}`;
+
+      let options = Array.isArray(question.options)
         ? question.options
           .map((option) => (typeof option === 'string' ? option.trim() : ''))
           .filter(Boolean)
         : [];
-      const isChoice = question.type === 'choice' && options.length >= 2;
+
+      if (options.length < 2) {
+        options = inferDefaultOptions(id, text);
+      }
 
       return {
-        id: typeof question.id === 'string' && question.id.trim()
-          ? question.id.trim()
-          : `q${index + 1}`,
+        id,
         text,
-        type: isChoice ? 'choice' : 'text',
-        options: isChoice ? options : undefined,
+        type: 'choice',
+        options: options.slice(0, 5),
       };
     })
     .filter((question) => question.text)

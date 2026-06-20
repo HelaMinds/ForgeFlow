@@ -7,6 +7,8 @@ export default function InputBox({ onSubmit, loading }) {
   const [idea, setIdea] = useState('');
   const [ideaType, setIdeaType] = useState(IDEA_TYPES[0].id);
 
+  const selectedType = IDEA_TYPES.find((type) => type.id === ideaType);
+
   function handleSubmit(event) {
     event.preventDefault();
     if (!idea.trim() || loading) return;
@@ -28,6 +30,9 @@ export default function InputBox({ onSubmit, loading }) {
             </option>
           ))}
         </select>
+        {selectedType?.description ? (
+          <p className="text-xs leading-relaxed text-slate-500">{selectedType.description}</p>
+        ) : null}
       </label>
 
       <label className="block space-y-2">
@@ -46,7 +51,7 @@ export default function InputBox({ onSubmit, loading }) {
         disabled={loading || !idea.trim()}
         className="rounded-lg bg-orange-500 px-5 py-3 font-medium text-white transition hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {loading ? 'Analyzing idea...' : 'Continue'}
+        {loading ? 'Running Clarifier agent...' : 'Continue to clarify'}
       </button>
     </form>
   );

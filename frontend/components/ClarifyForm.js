@@ -3,37 +3,35 @@
 import { useState } from 'react';
 
 function QuestionField({ question, value, onChange }) {
-  if (question.type === 'choice' && question.options?.length) {
-    return (
-      <div className="space-y-2">
-        {question.options.map((option) => (
+  return (
+    <div className="grid gap-2 sm:grid-cols-1">
+      {question.options.map((option) => {
+        const isSelected = value === option;
+
+        return (
           <label
             key={option}
-            className="flex cursor-pointer items-center gap-3 rounded-lg border border-slate-800 bg-slate-950 px-4 py-3 transition hover:border-slate-700"
+            className={`flex cursor-pointer items-start gap-3 rounded-xl border px-4 py-3.5 transition ${
+              isSelected
+                ? 'border-orange-500/60 bg-orange-500/10 ring-1 ring-orange-500/30'
+                : 'border-slate-800 bg-slate-950 hover:border-slate-700'
+            }`}
           >
             <input
               type="radio"
               name={question.id}
               value={option}
-              checked={value === option}
+              checked={isSelected}
               onChange={() => onChange(option)}
-              className="accent-orange-500"
+              className="mt-0.5 accent-orange-500"
             />
-            <span className="text-sm text-slate-200">{option}</span>
+            <span className={`text-sm leading-relaxed ${isSelected ? 'text-slate-100' : 'text-slate-300'}`}>
+              {option}
+            </span>
           </label>
-        ))}
-      </div>
-    );
-  }
-
-  return (
-    <textarea
-      value={value}
-      onChange={(event) => onChange(event.target.value)}
-      rows={3}
-      className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-slate-100 outline-none ring-orange-500 focus:ring-2"
-      placeholder="Your answer..."
-    />
+        );
+      })}
+    </div>
   );
 }
 
@@ -50,22 +48,19 @@ export default function ClarifyForm({ questions, onSubmit, loading }) {
     event.preventDefault();
     if (loading) return;
 
-    const trimmedAnswers = Object.fromEntries(
-      Object.entries(answers).map(([id, value]) => [id, value.trim()]),
-    );
-
-    onSubmit(trimmedAnswers);
+    onSubmit({ ...answers });
   }
 
-  const allAnswered = questions.every((question) => answers[question.id]?.trim());
+  const allAnswered = questions.every((question) => answers[question.id]);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-8">
       {questions.map((question, index) => (
         <fieldset key={question.id} className="space-y-3">
-          <legend className="text-sm font-medium text-slate-200">
+          <legend className="text-base font-medium leading-snug text-slate-100">
             {index + 1}. {question.text}
           </legend>
+          <p className="text-xs text-slate-500">Select one option</p>
           <QuestionField
             question={question}
             value={answers[question.id]}

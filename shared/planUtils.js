@@ -76,6 +76,22 @@ function normalizeTitle(result, clarified) {
   return '';
 }
 
+function normalizePathOptions(pathOptions) {
+  if (!Array.isArray(pathOptions)) {
+    return [];
+  }
+
+  return pathOptions
+    .map((option, index) => ({
+      id: isNonEmptyString(option.id) ? option.id.trim() : `path_${index + 1}`,
+      title: isNonEmptyString(option.title) ? option.title.trim() : `Path ${index + 1}`,
+      description: isNonEmptyString(option.description) ? option.description.trim() : '',
+      tradeoffs: isNonEmptyString(option.tradeoffs) ? option.tradeoffs.trim() : '',
+    }))
+    .filter((option) => option.title)
+    .slice(0, 3);
+}
+
 function normalizeFinalPlan(result, stressTest, clarified) {
   const roadmap = normalizeRoadmap(result.roadmap || []);
   const timeline = normalizeTimeline(result.timeline, roadmap);
@@ -87,6 +103,14 @@ function normalizeFinalPlan(result, stressTest, clarified) {
     overview: isNonEmptyString(result.overview) ? result.overview.trim() : '',
     roadmap,
     timeline,
+    pathOptions: normalizePathOptions(result.pathOptions),
+    selectedPath:
+      result.selectedPath && typeof result.selectedPath === 'object'
+        ? {
+            id: result.selectedPath.id || '',
+            title: result.selectedPath.title || '',
+          }
+        : undefined,
     risks: result.risks || stressTest?.risks || [],
     firstAction: isNonEmptyString(result.firstAction) ? result.firstAction.trim() : '',
     confidenceNote: isNonEmptyString(result.confidenceNote) ? result.confidenceNote.trim() : '',

@@ -24,6 +24,12 @@ roadmap: sequential array of 5-8 steps. Each step must have:
 
 timeline: object with totalDuration (e.g. "12+ months") summarizing the full plan length.
 
+pathOptions: array of exactly 2-3 strategic paths the user can choose between. Each with:
+- id (snake_case, e.g. "lean_mvp")
+- title (short name)
+- description (1-2 sentences on this approach)
+- tradeoffs (honest pros/cons string)
+
 Use plan.phases as the primary source but refine tasks and ordering for clarity.
 Merge stressTest risks into the risks array when relevant.`;
 

@@ -1,11 +1,27 @@
 export const IDEA_TYPES = [
-  { id: 'startup', label: 'Startup' },
-  { id: 'class_project', label: 'Class project' },
-  { id: 'side_hustle', label: 'Side hustle' },
+  {
+    id: 'startup',
+    label: 'Startup',
+    description: 'Build and launch a product or company with real market goals.',
+  },
+  {
+    id: 'class_project',
+    label: 'Class project',
+    description: 'Scoped for coursework — deadlines, rubrics, and demo-ready deliverables.',
+  },
+  {
+    id: 'side_hustle',
+    label: 'Side hustle',
+    description: 'Part-time effort alongside other work — lean scope and low burn.',
+  },
 ];
 
 export function getIdeaTypeLabel(id) {
   return IDEA_TYPES.find((type) => type.id === id)?.label || id;
+}
+
+export function getIdeaTypeDescription(id) {
+  return IDEA_TYPES.find((type) => type.id === id)?.description || '';
 }
 
 async function request(path, options) {
@@ -45,5 +61,25 @@ export async function generatePlan({ idea, answers, clarified }) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ idea, answers, clarified }),
+  });
+}
+
+export async function chatWithPlan({ message, context, history }) {
+  return request('/api/idea/chat', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ message, context, history }),
+  });
+}
+
+export async function applyPathChoice({ context, selectedPath }) {
+  return request('/api/idea/apply-path', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ context, selectedPath }),
   });
 }

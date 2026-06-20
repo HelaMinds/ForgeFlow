@@ -1,4 +1,5 @@
 const { runStructuredPrompt } = require('../services/llm');
+const { normalizeReasoningList } = require('../../shared/reasoningUtils');
 
 const SYSTEM_PROMPT = `You are the Stress Tester agent in ForgeFlow.
 Challenge the plan adversarially and surface uncertainty.
@@ -17,8 +18,8 @@ async function stressTestPlan({ clarified, plan }) {
 
   return {
     risks: result.risks || [],
-    weakAssumptions: result.weakAssumptions || [],
-    failureModes: result.failureModes || [],
+    weakAssumptions: normalizeReasoningList(result.weakAssumptions),
+    failureModes: normalizeReasoningList(result.failureModes),
   };
 }
 

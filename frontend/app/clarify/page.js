@@ -4,7 +4,10 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ClarifyForm from '../../components/ClarifyForm';
+import PipelineTrace from '../../components/PipelineTrace';
+import ResponsibleAiNotice from '../../components/ResponsibleAiNotice';
 import { generatePlan, getIdeaTypeLabel } from '../../lib/api';
+import { ensureChoiceQuestions, inferDefaultOptions } from '../../lib/questionUtils';
 
 export default function ClarifyPage() {
   const router = useRouter();
@@ -31,6 +34,7 @@ export default function ClarifyPage() {
       });
       sessionStorage.setItem('forgeflow-result', JSON.stringify(result));
       sessionStorage.removeItem('forgeflow-clarify');
+      sessionStorage.removeItem('forgeflow-path-choice');
       router.push('/result');
     } catch (err) {
       setError(err.message || 'Something went wrong');
@@ -50,24 +54,27 @@ export default function ClarifyPage() {
     );
   }
 
-  const { idea, ideaType, clarified } = clarifyData;
-  const questions = clarified.questions?.length
-    ? clarified.questions
-    : (clarified.openQuestions || []).map((text, index) => ({
-        id: `q${index + 1}`,
-        text,
-        type: 'text',
-      }));
+  const { idea, ideaType, clarified, pipelineTrace = [] } = clarifyData;
+  const questions = ensureChoiceQuestions(
+    clarified.questions?.length
+      ? clarified.questions
+      : (clarified.openQuestions || []).map((text, index) => ({
+          id: `q${index + 1}`,
+          text,
+          type: 'choice',
+          options: inferDefaultOptions(`q${index + 1}`, text),
+        })),
+  );
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-16">
       <div className="mb-8 flex items-center justify-between">
         <div>
           <p className="text-sm uppercase tracking-widest text-orange-400">Clarify</p>
-          <h1 className="mt-2 text-3xl font-bold">Answer a few questions</h1>
+          <h1 className="mt-2 text-3xl font-bold">Choose your answers</h1>
           <p className="mt-4 text-slate-400">
-            ForgeFlow needs your input before building a plan. You stay in control of the
-            decisions.
+            Select one option per question. Your choices shape the plan — ForgeFlow will not
+            guess on your behalf.
           </p>
         </div>
         <Link
@@ -89,6 +96,14 @@ export default function ClarifyPage() {
             />
           </svg>
         </Link>
+      </div>
+
+      <div className="mb-8">
+        <PipelineTrace trace={pipelineTrace} activeStage="planner" compact />
+      </div>
+
+      <div className="mb-8">
+        <ResponsibleAiNotice variant="compact" />
       </div>
 
       <section className="mb-8 rounded-xl border border-slate-800 bg-slate-900 p-6">

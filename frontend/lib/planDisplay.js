@@ -139,8 +139,8 @@ export function extractPlanStats({ idea, userAnswers = [], ideaTypeLabel, phaseC
     addStat({ label: 'Phases', value: String(phaseCount) });
   }
 
-  if (totalDuration) {
-    addStat({ label: 'Duration', value: totalDuration });
+  if (totalDuration && !seen.has('Timeline')) {
+    addStat({ label: 'Timeline', value: totalDuration });
   }
 
   return stats.slice(0, 5);
