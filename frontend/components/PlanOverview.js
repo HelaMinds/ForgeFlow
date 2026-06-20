@@ -1,8 +1,8 @@
-export default function PlanOverview({ idea, ideaTypeLabel, clarified, finalPlan }) {
-  const goals = clarified.goals || [];
-  const constraints = (clarified.constraints || []).filter(
-    (item) => !item.startsWith('Q: ') && !item.startsWith('Idea type:'),
-  );
+import { isUserAnswerConstraint, normalizeReasoningList } from '../lib/reasoningUtils';
+
+export default function PlanOverview({ idea, ideaTypeLabel, clarified }) {
+  const goals = normalizeReasoningList(clarified.goals);
+  const constraints = normalizeReasoningList(clarified.constraints).filter(isUserAnswerConstraint);
   const userAnswers = clarified.userAnswers || [];
 
   return (
@@ -40,8 +40,8 @@ export default function PlanOverview({ idea, ideaTypeLabel, clarified, finalPlan
             <section className="rounded-xl border border-slate-800 bg-slate-900 p-5">
               <h2 className="text-sm font-medium uppercase tracking-widest text-slate-500">Goals</h2>
               <ul className="mt-3 space-y-2">
-                {goals.map((goal) => (
-                  <li key={goal} className="flex items-start gap-2 text-sm text-slate-300">
+                {goals.map((goal, index) => (
+                  <li key={`goal-${index}-${goal}`} className="flex items-start gap-2 text-sm text-slate-300">
                     <span aria-hidden="true" className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-orange-400" />
                     {goal}
                   </li>
@@ -56,8 +56,8 @@ export default function PlanOverview({ idea, ideaTypeLabel, clarified, finalPlan
                 Constraints
               </h2>
               <ul className="mt-3 space-y-2">
-                {constraints.map((constraint) => (
-                  <li key={constraint} className="flex items-start gap-2 text-sm text-slate-300">
+                {constraints.map((constraint, index) => (
+                  <li key={`constraint-${index}-${constraint}`} className="flex items-start gap-2 text-sm text-slate-300">
                     <span aria-hidden="true" className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-500" />
                     {constraint}
                   </li>

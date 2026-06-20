@@ -1,5 +1,6 @@
 const { runStructuredPrompt } = require('../services/llm');
 const { normalizeRoadmap } = require('../../shared/planUtils');
+const { normalizeReasoningList } = require('../../shared/reasoningUtils');
 
 const SYSTEM_PROMPT = `You are the Planner agent in ForgeFlow.
 Build a realistic execution plan from clarified context and confirmed user answers.
@@ -19,7 +20,9 @@ phases must be a sequential array of 5-8 objects, each with:
 - milestone (one measurable outcome when the phase is complete)
 
 Respect the user's stated budget, timeline, and skills from userAnswers.
-assumptions should only include items not already confirmed in userAnswers or constraints.`;
+assumptions: array of plain strings (not objects).
+dependencies: array of plain strings describing cross-phase dependencies (not objects).
+Assumptions should only include items not already confirmed in userAnswers or constraints.`;
 
 async function createPlan(clarified) {
   const result = await runStructuredPrompt({
@@ -30,8 +33,8 @@ async function createPlan(clarified) {
   return {
     overview: result.overview || '',
     phases: normalizeRoadmap(result.phases || []),
-    assumptions: result.assumptions || [],
-    dependencies: result.dependencies || [],
+    assumptions: normalizeReasoningList(result.assumptions),
+    dependencies: normalizeReasoningList(result.dependencies),
   };
 }
 
