@@ -10,7 +10,7 @@ import ReasoningPanel from '../../components/ReasoningPanel';
 import PathDecisionPanel from '../../components/PathDecisionPanel';
 import ResponsibleAiNotice from '../../components/ResponsibleAiNotice';
 import ResultSidebar from '../../components/ResultSidebar';
-import PlanChatPanel from '../../components/PlanChatPanel';
+import PlanSummaryPanel from '../../components/PlanSummaryPanel';
 import TimelineFlow from '../../components/TimelineFlow';
 import RiskCard from '../../components/RiskCard';
 import { getIdeaTypeLabel, applyPathChoice as applyPathChoiceApi } from '../../lib/api';
@@ -22,16 +22,14 @@ const RESULT_STORAGE_KEY = 'forgeflow-result';
 function SectionIntro({ title, description }) {
   return (
     <div className="mb-6">
-      <h2 className="text-xl font-semibold text-slate-100">{title}</h2>
-      {description ? <p className="mt-2 text-sm text-slate-400">{description}</p> : null}
+      <h2 className="text-xl font-semibold text-riso-ink">{title}</h2>
+      {description ? <p className="mt-1.5 text-sm text-riso-muted">{description}</p> : null}
     </div>
   );
 }
 
 function buildSections(result) {
-  if (!result) {
-    return [];
-  }
+  if (!result) return [];
 
   const { finalPlan, pipelineTrace, reasoning, stressTest } = result;
   const hasPipeline = (pipelineTrace?.length ?? 0) > 0;
@@ -71,19 +69,14 @@ export default function ResultPage() {
     if (stored) {
       const parsed = JSON.parse(stored);
       setResult(parsed);
-      if (parsed.finalPlan?.selectedPath) {
-        setSelectedPath(parsed.finalPlan.selectedPath);
-      }
+      if (parsed.finalPlan?.selectedPath) setSelectedPath(parsed.finalPlan.selectedPath);
     }
-
     const storedPath = sessionStorage.getItem(PATH_STORAGE_KEY);
-    if (storedPath) {
-      setSelectedPath(JSON.parse(storedPath));
-    }
+    if (storedPath) setSelectedPath(JSON.parse(storedPath));
   }, []);
 
   useEffect(() => {
-    if (sections.length && !sections.some((section) => section.id === activeSection)) {
+    if (sections.length && !sections.some((s) => s.id === activeSection)) {
       setActiveSection(sections[0].id);
     }
   }, [sections, activeSection]);
@@ -109,12 +102,7 @@ export default function ResultPage() {
       },
       selectedPath: path,
     });
-
-    const nextResult = {
-      ...result,
-      finalPlan: response.finalPlan,
-    };
-
+    const nextResult = { ...result, finalPlan: response.finalPlan };
     persistResult(nextResult);
     handlePathSelect(response.selectedPath || path);
     setPathApplyMessage(response.message);
@@ -122,30 +110,21 @@ export default function ResultPage() {
   }
 
   function handlePlanUpdate(updates) {
-    if (!result) {
-      return;
-    }
-
+    if (!result) return;
     const nextResult = {
       ...result,
       finalPlan: updates.finalPlan || result.finalPlan,
-      clarified: updates.clarified
-        ? { ...result.clarified, ...updates.clarified }
-        : result.clarified,
+      clarified: updates.clarified ? { ...result.clarified, ...updates.clarified } : result.clarified,
     };
-
     persistResult(nextResult);
-
-    if (updates.finalPlan?.pathOptions?.length === 1) {
-      handlePathSelect(updates.finalPlan.pathOptions[0]);
-    }
+    if (updates.finalPlan?.pathOptions?.length === 1) handlePathSelect(updates.finalPlan.pathOptions[0]);
   }
 
   if (!result) {
     return (
       <main className="mx-auto max-w-4xl px-6 py-16">
-        <p className="text-slate-400">No result found.</p>
-        <Link href="/" className="mt-4 inline-block text-orange-400 hover:underline">
+        <p className="text-riso-muted">No result found.</p>
+        <Link href="/" className="mt-4 inline-block font-medium text-riso-coral hover:underline">
           Start over
         </Link>
       </main>
@@ -159,13 +138,26 @@ export default function ResultPage() {
   const totalDuration = finalPlan.timeline?.totalDuration;
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-950">
-      <div className="mx-auto w-full max-w-[1600px]">
+    <div className="flex min-h-screen flex-col bg-riso-paper">
+      {/* Top bar */}
+      <div className="w-full">
         <ResultTopBar finalPlan={finalPlan} clarified={clarified} idea={idea} />
       </div>
 
-      <div className="mx-auto flex w-full max-w-[1600px] flex-1 flex-col lg:flex-row lg:overflow-hidden">
-        <aside className="hidden w-56 shrink-0 lg:flex lg:flex-col">
+      {/* Mobile nav */}
+      <div className="lg:hidden">
+        <ResultSidebar
+          sections={sections}
+          activeId={activeSection}
+          onChange={setActiveSection}
+          orientation="horizontal"
+        />
+      </div>
+
+      {/* 3-column body */}
+      <div className="flex min-h-0 flex-1 overflow-hidden lg:h-[calc(100vh-64px)]">
+        {/* Left sidebar — desktop only */}
+        <aside className="hidden lg:flex lg:shrink-0">
           <ResultSidebar
             sections={sections}
             activeId={activeSection}
@@ -173,137 +165,127 @@ export default function ResultPage() {
           />
         </aside>
 
-        <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
-          <main className="min-h-0 flex-1 overflow-y-auto px-4 py-6 sm:px-6 lg:max-h-[calc(100vh-64px)]">
-            <div className="mb-4 lg:hidden">
-              <ResultSidebar
-                sections={sections}
-                activeId={activeSection}
-                onChange={setActiveSection}
-                orientation="horizontal"
+        {/* Main content */}
+        <main className="min-h-0 flex-1 overflow-y-auto px-4 py-6 sm:px-6 lg:px-8">
+          {activeSection === 'overview' && (
+            <div className="space-y-6">
+              <PlanHero
+                finalPlan={finalPlan}
+                clarified={clarified}
+                idea={idea}
+                ideaTypeLabel={ideaTypeLabel}
+                userAnswers={userAnswers}
+                phaseCount={phaseCount}
+                totalDuration={totalDuration}
+              />
+              <PlanOverview idea={idea} ideaTypeLabel={ideaTypeLabel} clarified={clarified} />
+              <ResponsibleAiNotice variant="compact" />
+            </div>
+          )}
+
+          {activeSection === 'pipeline' && (
+            <div className="space-y-8">
+              <SectionIntro
+                title="How this plan was built"
+                description="Four agents ran in sequence. Here is what each one produced and why."
+              />
+              <PipelineTrace trace={pipelineTrace} />
+              <ReasoningPanel reasoning={reasoning} clarified={clarified} />
+            </div>
+          )}
+
+          {activeSection === 'timeline' && (
+            <div>
+              <SectionIntro
+                title="Step-by-step timeline"
+                description="Follow these phases in order. Complete each milestone before moving on."
+              />
+              {selectedPath ? (
+                <div className="mb-6 rounded-xl border border-riso-blue/25 bg-riso-blue-light px-4 py-3">
+                  <p className="text-sm text-riso-blue">
+                    Plan shaped for:{' '}
+                    <span className="font-semibold">{selectedPath.title}</span>
+                  </p>
+                  {pathApplyMessage ? (
+                    <p className="mt-1 text-xs text-riso-muted">{pathApplyMessage}</p>
+                  ) : null}
+                </div>
+              ) : null}
+              <TimelineFlow roadmap={finalPlan.roadmap} timeline={finalPlan.timeline} />
+            </div>
+          )}
+
+          {activeSection === 'decisions' && (
+            <div>
+              <SectionIntro
+                title="Choose your strategic path"
+                description="Pick an approach — the plan will adapt your timeline, tasks, and first action to match."
+              />
+              <PathDecisionPanel
+                pathOptions={finalPlan.pathOptions}
+                selectedPath={selectedPath}
+                onApply={handlePathApply}
+                appliedMessage={
+                  selectedPath && pathApplyMessage
+                    ? pathApplyMessage
+                    : selectedPath
+                      ? `Active path: ${selectedPath.title}. Switch options and apply again to reshape the plan.`
+                      : ''
+                }
               />
             </div>
+          )}
 
-            {activeSection === 'overview' ? (
-              <div className="space-y-6">
-                <PlanHero
-                  finalPlan={finalPlan}
-                  clarified={clarified}
-                  idea={idea}
-                  ideaTypeLabel={ideaTypeLabel}
-                  userAnswers={userAnswers}
-                  phaseCount={phaseCount}
-                  totalDuration={totalDuration}
-                />
-                <PlanOverview idea={idea} ideaTypeLabel={ideaTypeLabel} clarified={clarified} />
-                <ResponsibleAiNotice variant="compact" />
-              </div>
-            ) : null}
-
-            {activeSection === 'pipeline' ? (
-              <div className="space-y-8">
-                <SectionIntro
-                  title="How this plan was built"
-                  description="Four agents ran in sequence. Here is what each one produced and why."
-                />
-                <PipelineTrace trace={pipelineTrace} />
-                <ReasoningPanel reasoning={reasoning} clarified={clarified} />
-              </div>
-            ) : null}
-
-            {activeSection === 'timeline' ? (
-              <div>
-                <SectionIntro
-                  title="Step-by-step timeline"
-                  description="Follow these phases in order. Complete each milestone before moving on."
-                />
-                {selectedPath ? (
-                  <div className="mb-6 rounded-lg border border-sky-500/25 bg-sky-500/10 px-4 py-3">
-                    <p className="text-sm text-sky-300">
-                      Plan shaped for: <span className="font-semibold">{selectedPath.title}</span>
-                    </p>
-                    {pathApplyMessage ? (
-                      <p className="mt-1 text-xs text-slate-400">{pathApplyMessage}</p>
-                    ) : null}
-                  </div>
-                ) : null}
-                <TimelineFlow roadmap={finalPlan.roadmap} timeline={finalPlan.timeline} />
-              </div>
-            ) : null}
-
-            {activeSection === 'decisions' ? (
-              <div>
-                <SectionIntro
-                  title="Choose your strategic path"
-                  description="Pick an approach — the plan will adapt your timeline, tasks, and first action to match."
-                />
-                <PathDecisionPanel
-                  pathOptions={finalPlan.pathOptions}
-                  selectedPath={selectedPath}
-                  onApply={handlePathApply}
-                  appliedMessage={
-                    selectedPath && pathApplyMessage
-                      ? pathApplyMessage
-                      : selectedPath
-                        ? `Active path: ${selectedPath.title}. Switch options and apply again to reshape the plan.`
-                        : ''
-                  }
-                />
-              </div>
-            ) : null}
-
-            {activeSection === 'risks' ? (
-              <div className="space-y-6">
-                <SectionIntro
-                  title="Risks & mitigations"
-                  description="Known challenges flagged by the Stress Tester agent and how to handle them."
-                />
-                {finalPlan.risks?.length ? (
-                  <div className="grid gap-4 md:grid-cols-2">
-                    {finalPlan.risks.map((risk, index) => (
-                      <RiskCard key={`${risk.title}-${index}`} risk={risk} />
-                    ))}
-                  </div>
-                ) : null}
-                {normalizeReasoningList(stressTest.weakAssumptions).length > 0 ? (
-                  <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
-                    <p className="text-sm font-medium text-slate-300">Weak assumptions to validate</p>
-                    <ul className="mt-3 space-y-2">
-                      {normalizeReasoningList(stressTest.weakAssumptions).map((item, index) => (
-                        <li
-                          key={`weak-${index}-${item}`}
-                          className="flex items-start gap-2 text-sm text-slate-400"
-                        >
-                          <span aria-hidden="true" className="mt-1.5 text-orange-400/70">
-                            •
-                          </span>
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-              </div>
-            ) : null}
-
-            {activeSection === 'next' ? (
-              <div className="space-y-6">
-                <SectionIntro
-                  title="Start here"
-                  description="Your first concrete move — do this before anything else."
-                />
-                <div className="rounded-xl border border-orange-500/30 bg-orange-500/10 p-6">
-                  <p className="text-base leading-relaxed text-slate-100">{finalPlan.firstAction}</p>
+          {activeSection === 'risks' && (
+            <div className="space-y-6">
+              <SectionIntro
+                title="Risks & mitigations"
+                description="Known challenges flagged by the Stress Tester agent and how to handle them."
+              />
+              {finalPlan.risks?.length ? (
+                <div className="grid gap-4 md:grid-cols-2">
+                  {finalPlan.risks.map((risk, index) => (
+                    <RiskCard key={`${risk.title}-${index}`} risk={risk} />
+                  ))}
                 </div>
-                <ResponsibleAiNotice confidenceNote={finalPlan.confidenceNote} />
-              </div>
-            ) : null}
-          </main>
+              ) : null}
+              {normalizeReasoningList(stressTest.weakAssumptions).length > 0 ? (
+                <div className="riso-card p-5">
+                  <p className="text-sm font-medium text-riso-ink">Weak assumptions to validate</p>
+                  <ul className="mt-3 space-y-2">
+                    {normalizeReasoningList(stressTest.weakAssumptions).map((item, index) => (
+                      <li
+                        key={`weak-${index}-${item}`}
+                        className="flex items-start gap-2 text-sm text-riso-muted"
+                      >
+                        <span aria-hidden="true" className="mt-1.5 text-riso-coral/70">•</span>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+            </div>
+          )}
 
-          <aside className="h-80 shrink-0 border-t border-slate-800 lg:h-auto lg:w-80 lg:border-l lg:border-t-0">
-            <PlanChatPanel result={result} onPlanUpdate={handlePlanUpdate} />
-          </aside>
-        </div>
+          {activeSection === 'next' && (
+            <div className="space-y-6">
+              <SectionIntro
+                title="Start here"
+                description="Your first concrete move — do this before anything else."
+              />
+              <div className="rounded-xl border-2 border-riso-coral bg-riso-coral-light p-6 shadow-riso-md">
+                <p className="text-base leading-relaxed text-riso-ink">{finalPlan.firstAction}</p>
+              </div>
+              <ResponsibleAiNotice confidenceNote={finalPlan.confidenceNote} />
+            </div>
+          )}
+        </main>
+
+        {/* Right panel — desktop: plan summary + chat, mobile: below main */}
+        <aside className="h-80 shrink-0 border-t border-riso-border lg:h-auto lg:w-80 lg:border-l lg:border-t-0">
+          <PlanSummaryPanel result={result} onPlanUpdate={handlePlanUpdate} />
+        </aside>
       </div>
     </div>
   );

@@ -17,12 +17,12 @@ export default function InputBox({ onSubmit, loading }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <label className="block space-y-2">
-        <span className="text-sm font-medium text-slate-300">Idea type</span>
+      <label className="block space-y-1.5">
+        <span className="text-sm font-semibold text-riso-ink">Idea type</span>
         <select
           value={ideaType}
-          onChange={(event) => setIdeaType(event.target.value)}
-          className="w-full rounded-xl border border-slate-700 bg-slate-900 p-3 text-slate-100 outline-none ring-orange-500 focus:ring-2"
+          onChange={(e) => setIdeaType(e.target.value)}
+          className="w-full rounded-xl border border-riso-border bg-riso-paper px-3 py-2.5 text-sm text-riso-ink outline-none focus:border-riso-coral focus:ring-2 focus:ring-riso-coral/20"
         >
           {IDEA_TYPES.map((type) => (
             <option key={type.id} value={type.id}>
@@ -31,27 +31,27 @@ export default function InputBox({ onSubmit, loading }) {
           ))}
         </select>
         {selectedType?.description ? (
-          <p className="text-xs leading-relaxed text-slate-500">{selectedType.description}</p>
+          <p className="text-xs leading-relaxed text-riso-faint">{selectedType.description}</p>
         ) : null}
       </label>
 
-      <label className="block space-y-2">
-        <span className="text-sm font-medium text-slate-300">Your idea</span>
+      <label className="block space-y-1.5">
+        <span className="text-sm font-semibold text-riso-ink">Your idea</span>
         <textarea
           value={idea}
-          onChange={(event) => setIdea(event.target.value)}
-          placeholder="Describe your idea..."
-          rows={6}
-          className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-slate-100 outline-none ring-orange-500 focus:ring-2"
+          onChange={(e) => setIdea(e.target.value)}
+          placeholder="Describe your idea in a few sentences…"
+          rows={5}
+          className="w-full rounded-xl border border-riso-border bg-riso-paper px-4 py-3 text-sm text-riso-ink outline-none placeholder:text-riso-faint focus:border-riso-coral focus:ring-2 focus:ring-riso-coral/20"
         />
       </label>
 
       <button
         type="submit"
         disabled={loading || !idea.trim()}
-        className="rounded-lg bg-orange-500 px-5 py-3 font-medium text-white transition hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-50"
+        className="rounded-xl bg-riso-coral px-6 py-3 font-semibold text-white shadow-riso-btn transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
       >
-        {loading ? 'Running Clarifier agent...' : 'Continue to clarify'}
+        {loading ? 'Running Clarifier agent…' : 'Continue to clarify →'}
       </button>
     </form>
   );
