@@ -1,13 +1,31 @@
 const { runStructuredPrompt } = require('../services/llm');
+const { normalizeFinalPlan } = require('../../shared/planUtils');
 
 const SYSTEM_PROMPT = `You are the Synthesizer agent in ForgeFlow.
-Combine clarified context, confirmed user answers, plan, and stress test results into a final roadmap.
+Combine clarified context, confirmed user answers, plan, and stress test results into a final execution roadmap.
 
 Personalize the roadmap and firstAction using userAnswers — reference the user's stated
-constraints where relevant. Do not present the plan as guaranteed to succeed.
+budget, timeline, skills, and constraints. Do not present the plan as guaranteed to succeed.
 
-Return JSON with keys: summary, roadmap, risks, firstAction, confidenceNote.
-roadmap must be an array of objects with title, description, and timeframe.`;
+Return JSON with keys: title, summary, overview, roadmap, timeline, risks, firstAction, confidenceNote.
+
+title: short project name only — max 8 words (e.g. "SMB Accounting SaaS Platform"). Never paste the user's full idea.
+summary: one outcome sentence, max 25 words. Do NOT repeat or paraphrase the entire original idea.
+overview: 2-3 sentence executive brief (what, for whom, timeline, key constraint).
+
+roadmap: sequential array of 5-8 steps. Each step must have:
+- order (1-based integer, no gaps)
+- title (short phase name)
+- description (1-2 sentences)
+- timeframe (e.g. "Weeks 1-4", "Months 5-8")
+- durationDays (estimated days)
+- tasks (array of 3-5 concrete, actionable to-do items the user can check off)
+- milestone (one measurable deliverable when this step is done)
+
+timeline: object with totalDuration (e.g. "12+ months") summarizing the full plan length.
+
+Use plan.phases as the primary source but refine tasks and ordering for clarity.
+Merge stressTest risks into the risks array when relevant.`;
 
 async function synthesizePlan({ clarified, plan, stressTest }) {
   const result = await runStructuredPrompt({
@@ -15,13 +33,7 @@ async function synthesizePlan({ clarified, plan, stressTest }) {
     userPrompt: JSON.stringify({ clarified, plan, stressTest }, null, 2),
   });
 
-  return {
-    summary: result.summary || '',
-    roadmap: result.roadmap || [],
-    risks: result.risks || stressTest.risks || [],
-    firstAction: result.firstAction || '',
-    confidenceNote: result.confidenceNote || '',
-  };
+  return normalizeFinalPlan(result, stressTest, clarified);
 }
 
 module.exports = {

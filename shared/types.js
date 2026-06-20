@@ -26,9 +26,19 @@
 
 /**
  * @typedef {Object} PlanStep
+ * @property {number} order
  * @property {string} title
  * @property {string} description
  * @property {string} timeframe
+ * @property {number|null} [durationDays]
+ * @property {string[]} tasks
+ * @property {string} [milestone]
+ */
+
+/**
+ * @typedef {Object} PlanTimeline
+ * @property {string} totalDuration
+ * @property {number} totalSteps
  */
 
 /**
@@ -56,8 +66,11 @@
 
 /**
  * @typedef {Object} FinalPlan
+ * @property {string} [title]
  * @property {string} summary
+ * @property {string} [overview]
  * @property {PlanStep[]} roadmap
+ * @property {PlanTimeline} [timeline]
  * @property {Risk[]} risks
  * @property {string} firstAction
  * @property {string} confidenceNote
