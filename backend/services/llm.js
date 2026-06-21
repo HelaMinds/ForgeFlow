@@ -17,6 +17,7 @@ const RETRYABLE_CODES = new Set([
   'ENOTFOUND',
   'UND_ERR_SOCKET',
   'UND_ERR_CONNECT_TIMEOUT',
+  'ERR_STREAM_PREMATURE_CLOSE',
 ]);
 
 // Default Google model fallback chain. Each model has its own free-tier quota,
@@ -61,7 +62,7 @@ function isRetryable(error) {
   }
   const message = String(error?.message || '');
   if (/\b(429|500|502|503|504)\b/.test(message)) return true;
-  if (/too many requests|service unavailable|overloaded|high demand|rate limit|quota|socket hang up|timeout|temporarily/i.test(message)) {
+  if (/too many requests|service unavailable|overloaded|high demand|rate limit|quota|socket hang up|premature close|timeout|temporarily/i.test(message)) {
     return true;
   }
   return false;
@@ -145,9 +146,19 @@ function normalizeError(error) {
 }
 
 // --- Lazy client builders ---------------------------------------------------
+function openAIClientOptions(apiKey, baseURL) {
+  return {
+    apiKey,
+    ...(baseURL ? { baseURL } : {}),
+    maxRetries: 0,
+    // The SDK's legacy node-fetch transport can truncate valid responses on Node 22.
+    fetch: globalThis.fetch,
+  };
+}
+
 function getOpenAIClient() {
   const OpenAI = require('openai');
-  return new OpenAI({ apiKey: process.env.OPENAI_API_KEY, maxRetries: 0 });
+  return new OpenAI(openAIClientOptions(process.env.OPENAI_API_KEY));
 }
 
 function getGoogleClient() {
@@ -163,11 +174,12 @@ function getAnthropicClient() {
 // Hugging Face's Inference Router is OpenAI-compatible, so we reuse the openai SDK.
 function getHuggingFaceClient() {
   const OpenAI = require('openai');
-  return new OpenAI({
-    apiKey: process.env.HUGGINGFACE_API_KEY,
-    baseURL: process.env.HUGGINGFACE_BASE_URL || 'https://router.huggingface.co/v1',
-    maxRetries: 0,
-  });
+  return new OpenAI(
+    openAIClientOptions(
+      process.env.HUGGINGFACE_API_KEY,
+      process.env.HUGGINGFACE_BASE_URL || 'https://router.huggingface.co/v1',
+    ),
+  );
 }
 
 // --- Provider implementations ----------------------------------------------
@@ -286,4 +298,8 @@ async function runStructuredPrompt({ systemPrompt, userPrompt }) {
   return runWithFallback([process.env.OPENAI_MODEL || 'gpt-4o'], prompt, callOpenAI, 'openai');
 }
 
-module.exports = { runStructuredPrompt, LLMError };
+module.exports = {
+  runStructuredPrompt,
+  LLMError,
+  _testing: { isRetryable, openAIClientOptions },
+};
