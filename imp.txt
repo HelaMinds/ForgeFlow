@@ -1,7 +1,0 @@
-What to improve
-Show the reasoning — Display openQuestions, goals, constraints, and assumptions on the result page, not just the final roadmap.
-Add a user decision moment — Let users answer clarifying questions or choose a path before/after the plan (human-in-the-loop).
-Make responsible AI explicit — Add clear UI copy: "This is decision support, not advice" + your confidenceNote.
-Use or drop LangGraph — Either wire the pipeline through it, or remove it from README/deps to avoid mismatch.
-Add light user context — e.g. idea type (class project / startup / side hustle) so plans feel less generic.
-Biggest win for judges: expose the pipeline in the UI and pitch — right now the smart part happens in the backend but looks like a simple list generator on the surface.
