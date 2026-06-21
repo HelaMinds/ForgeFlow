@@ -39,7 +39,7 @@ export default function ClarifyPage() {
       sessionStorage.setItem('forgeflow-result', JSON.stringify(result));
       sessionStorage.removeItem('forgeflow-clarify');
       sessionStorage.removeItem('forgeflow-path-choice');
-      router.push('/result');
+      router.push(result.finalPlan?.pathOptions?.length ? '/choose-path' : '/result');
     } catch (err) {
       setError(err.message || 'Something went wrong');
       setLoading(false);

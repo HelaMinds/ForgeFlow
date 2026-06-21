@@ -92,14 +92,8 @@ async function runPlanFromAnswers({ idea, answers, clarified }) {
   };
 }
 
-async function runForgeFlow(idea) {
-  const { clarified } = await runClarify({ idea });
-  return runPlanFromAnswers({ idea, answers: {}, clarified });
-}
-
 module.exports = {
   mergeAnswersIntoClarified,
   runClarify,
   runPlanFromAnswers,
-  runForgeFlow,
 };

@@ -15,6 +15,14 @@ const AGENT_META = {
     agent: 'Synthesizer',
     role: 'Merge everything into a final actionable roadmap',
   },
+  pathAdapter: {
+    agent: 'Path Adapter',
+    role: 'Reshape the roadmap to match the strategic path you chose',
+  },
+  planRefiner: {
+    agent: 'Plan Refiner',
+    role: 'Apply your conversational edits to the plan',
+  },
 };
 
 function buildTraceEntry(stage, { summary, highlights = [] }) {
@@ -74,6 +82,26 @@ function buildSynthesizerTrace(finalPlan) {
   });
 }
 
+function buildPathAdapterTrace(selectedPath, message) {
+  return buildTraceEntry('pathAdapter', {
+    summary: message || `Plan reshaped for the "${selectedPath?.title || 'selected'}" path.`,
+    highlights: [selectedPath?.title ? `Path: ${selectedPath.title}` : null, 'Roadmap & first action updated'].filter(
+      Boolean,
+    ),
+  });
+}
+
+function buildPlanRefinerTrace(userMessage, changed = []) {
+  const summary = userMessage
+    ? `Applied your request: “${userMessage}”`
+    : 'Applied a conversational refinement.';
+
+  return buildTraceEntry('planRefiner', {
+    summary,
+    highlights: changed.length ? changed.map((field) => `Updated ${field}`) : ['Plan refined'],
+  });
+}
+
 const { normalizeReasoningList } = require('../../shared/reasoningUtils');
 
 function buildReasoning({ clarifiedSnapshot, plan, stressTest }) {
@@ -94,5 +122,7 @@ module.exports = {
   buildPlannerTrace,
   buildStressTesterTrace,
   buildSynthesizerTrace,
+  buildPathAdapterTrace,
+  buildPlanRefinerTrace,
   buildReasoning,
 };

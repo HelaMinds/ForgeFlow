@@ -1,5 +1,37 @@
 const { runStructuredPrompt } = require('../services/llm');
 const { normalizeFinalPlan } = require('../../shared/planUtils');
+const { buildPlanRefinerTrace } = require('../graph/pipelineTrace');
+
+const FIELD_LABELS = {
+  title: 'title',
+  summary: 'summary',
+  overview: 'overview',
+  roadmap: 'timeline',
+  timeline: 'timeline',
+  pathOptions: 'path options',
+  risks: 'risks',
+  firstAction: 'first action',
+  confidenceNote: 'confidence note',
+};
+
+function describeChangedFields(updates) {
+  const changed = [];
+
+  if (updates.finalPlan && typeof updates.finalPlan === 'object') {
+    for (const key of Object.keys(updates.finalPlan)) {
+      const label = FIELD_LABELS[key];
+      if (label && !changed.includes(label)) {
+        changed.push(label);
+      }
+    }
+  }
+
+  if (Array.isArray(updates.userAnswers) && updates.userAnswers.length > 0) {
+    changed.push('your answers');
+  }
+
+  return changed;
+}
 
 const SYSTEM_PROMPT = `You are the ForgeFlow Plan Refiner.
 The user has an execution plan and wants to adjust it through conversation.
@@ -67,8 +99,13 @@ async function chatAboutPlan({ message, context, history = [] }) {
     };
   }
 
+  const changed = describeChangedFields(updates);
+  const hasChanges = Boolean(updates.finalPlan) || Boolean(updates.userAnswers);
+
   return {
     reply: result.reply || 'Done.',
+    changed,
+    traceEntry: hasChanges ? buildPlanRefinerTrace(message, changed) : null,
     updates: {
       finalPlan: updates.finalPlan ? mergedFinalPlan : undefined,
       clarified: updates.userAnswers ? mergedClarified : undefined,

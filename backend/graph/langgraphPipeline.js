@@ -2,6 +2,7 @@ const { Annotation, StateGraph, START, END } = require('@langchain/langgraph');
 const { createPlan } = require('../agents/planner');
 const { stressTestPlan } = require('../agents/stressTest');
 const { synthesizePlan } = require('../agents/synthesizer');
+const { validateFinalPlan } = require('../../shared/schemas');
 const {
   buildPlannerTrace,
   buildStressTesterTrace,
@@ -43,11 +44,20 @@ async function stressTesterNode(state) {
 }
 
 async function synthesizerNode(state) {
-  const finalPlan = await synthesizePlan({
+  const input = {
     clarified: state.clarified,
     plan: state.plan,
     stressTest: state.stressTest,
-  });
+  };
+
+  let finalPlan = await synthesizePlan(input);
+
+  // Schema gate: if the synthesizer returns an incomplete plan, retry once
+  // before delivering it to the user.
+  if (!validateFinalPlan(finalPlan)) {
+    console.warn('[pipeline] synthesizer output failed validation — retrying once');
+    finalPlan = await synthesizePlan(input);
+  }
 
   return {
     finalPlan,
