@@ -18,3 +18,21 @@ test('premature response closes are treated as retryable transport errors', () =
     true,
   );
 });
+
+test('truncated OpenAI JSON becomes a retryable LLM error', () => {
+  assert.throws(
+    () =>
+      _testing.parseStructuredContent('{"reply":"unfinished', {
+        provider: 'OpenAI',
+        finishReason: 'length',
+      }),
+    (error) => error.name === 'LLMError' && error.retryable === true && !error.message.includes('Unterminated'),
+  );
+});
+
+test('malformed provider JSON never exposes the raw parser error', () => {
+  assert.throws(
+    () => _testing.parseStructuredContent('{"reply":"unfinished', { provider: 'OpenAI' }),
+    (error) => error.name === 'LLMError' && error.retryable === true && error.message === 'OpenAI returned incomplete JSON',
+  );
+});

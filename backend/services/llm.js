@@ -183,10 +183,39 @@ function getHuggingFaceClient() {
 }
 
 // --- Provider implementations ----------------------------------------------
+function parseStructuredContent(content, { provider, finishReason } = {}) {
+  if (!content) {
+    throw new LLMError(`Empty response from ${provider || 'AI provider'}`, {
+      status: 502,
+      retryable: true,
+    });
+  }
+
+  if (finishReason === 'length' || finishReason === 'max_tokens') {
+    throw new LLMError(`${provider || 'AI provider'} response was truncated`, {
+      status: 502,
+      retryable: true,
+    });
+  }
+
+  try {
+    return JSON.parse(content);
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      throw new LLMError(`${provider || 'AI provider'} returned incomplete JSON`, {
+        status: 502,
+        retryable: true,
+      });
+    }
+    throw error;
+  }
+}
+
 async function callOpenAI(model, { systemPrompt, userPrompt }) {
   const client = getOpenAIClient();
   const response = await client.chat.completions.create({
     model,
+    max_tokens: Number(process.env.OPENAI_MAX_TOKENS || 12000),
     temperature: 0.4,
     response_format: { type: 'json_object' },
     messages: [
@@ -194,9 +223,11 @@ async function callOpenAI(model, { systemPrompt, userPrompt }) {
       { role: 'user', content: userPrompt },
     ],
   });
-  const content = response.choices[0]?.message?.content;
-  if (!content) throw new LLMError('Empty response from OpenAI');
-  return JSON.parse(content);
+  const choice = response.choices[0];
+  return parseStructuredContent(choice?.message?.content, {
+    provider: 'OpenAI',
+    finishReason: choice?.finish_reason,
+  });
 }
 
 async function callGoogle(model, { systemPrompt, userPrompt }) {
@@ -301,5 +332,5 @@ async function runStructuredPrompt({ systemPrompt, userPrompt }) {
 module.exports = {
   runStructuredPrompt,
   LLMError,
-  _testing: { isRetryable, openAIClientOptions },
+  _testing: { isRetryable, openAIClientOptions, parseStructuredContent },
 };

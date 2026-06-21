@@ -41,6 +41,11 @@ overview, risks, timeline, or clarified userAnswers.
 
 Rules:
 - Only change what the user asks for. Keep everything else intact.
+- Return only the smallest patch needed. Never repeat the full current plan or unchanged fields.
+- Keep reply under 60 words.
+- For a new constraint such as budget, timeline, or team size, update userAnswers only unless the
+  user explicitly asks you to rewrite plan sections around it.
+- If a required constraint value is missing, ask one concise follow-up question and return empty updates.
 - Stay realistic. This is decision support, not guaranteed advice.
 - If the user picks or prefers a strategic path, reflect that in roadmap and firstAction.
 - pathOptions must remain type "choice" style objects with id, title, description, tradeoffs.
@@ -53,7 +58,26 @@ Return JSON with keys: reply, updates.
 
 If no plan changes are needed, return updates as an empty object.`;
 
+function needsBudgetAmount(message) {
+  if (!/\bbudget\b/i.test(message)) {
+    return false;
+  }
+
+  return !/(?:[$€£]\s*\d|\b\d[\d,.]*\s*(?:k|thousand|million)?\b|\b(?:under|over|between|maximum|max|limit|cap)\b)/i.test(
+    message,
+  );
+}
+
 async function chatAboutPlan({ message, context, history = [] }) {
+  if (needsBudgetAmount(message)) {
+    return {
+      reply: 'What budget limit should I use? For example: $2,000 total or $500 per month.',
+      changed: [],
+      traceEntry: null,
+      updates: {},
+    };
+  }
+
   const userPrompt = JSON.stringify(
     {
       currentPlan: context,
@@ -115,4 +139,5 @@ async function chatAboutPlan({ message, context, history = [] }) {
 
 module.exports = {
   chatAboutPlan,
+  needsBudgetAmount,
 };
