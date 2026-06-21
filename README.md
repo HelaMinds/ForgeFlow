@@ -1,19 +1,20 @@
 # ForgeFlow
 
-ForgeFlow is a structured AI-powered system that turns vague ideas into clear, actionable execution plans. It runs ideas through a **multi-agent pipeline** — **Clarifier → Planner → Stress Tester → Synthesizer** — orchestrated with **LangGraph**, so the output is practical, realistic, and aware of risks and uncertainty.
+ForgeFlow is a structured AI-powered system that turns vague ideas into clear, actionable execution plans. It runs ideas through a **critical-assessment gate** (Assessor), then a **multi-agent pipeline** — **Clarifier → Planner → Stress Tester → Synthesizer** — orchestrated with **LangGraph**. The output is practical, realistic, aware of risks, and resistant to manipulation.
 
-**Stack:** Next.js · Express · OpenAI GPT-4o · LangGraph
+**Stack:** Next.js · Express · OpenAI GPT-4o / Claude / Gemini · LangGraph
 
 ## Why ForgeFlow (pitch)
 
-Most “AI planners” are a single prompt disguised as a product. ForgeFlow exposes its reasoning:
+Most “AI planners” are a single prompt disguised as a product. ForgeFlow exposes its reasoning and enforces honest evaluation:
 
-1. **Clarifier** — structures your idea, surfaces goals/constraints, and asks you targeted questions (human-in-the-loop).
-2. **Planner** — builds phased execution steps from *your* confirmed answers.
-3. **Stress Tester** — adversarially challenges assumptions and flags risks.
-4. **Synthesizer** — merges everything into a roadmap plus strategic path options for you to choose.
+1. **Assessor** — critical gate that judges your idea across scope, feasibility, ethics, and market viability *before* planning. Catches vague/infeasible/unethical ideas early and offers concrete safer alternatives. Resistant to manipulation (e.g. demands for “only positive feedback”).
+2. **Clarifier** — structures your idea, surfaces goals/constraints, and asks you targeted questions (human-in-the-loop).
+3. **Planner** — builds phased execution steps from *your* confirmed answers.
+4. **Stress Tester** — adversarially challenges assumptions and flags risks.
+5. **Synthesizer** — merges everything into a roadmap plus strategic path options for you to choose.
 
-The UI shows the pipeline trace, agent reasoning (assumptions, open questions, failure modes), and a clear **“decision support, not advice”** disclaimer. You stay in control.
+The UI shows the pipeline trace, agent reasoning (assumptions, open questions, failure modes), assessment verdict and concerns, and a clear **”decision support, not advice”** disclaimer. You stay in control. No idea is blocked — a poor assessment just becomes visible.
 
 ## Setup
 
@@ -55,5 +56,5 @@ npm run dev:frontend
 ## User flow
 
 1. **Home** — pick idea type (startup / class project / side hustle) and describe your idea.
-2. **Clarify** — answer 3–5 agent-generated questions (your decisions shape the plan).
-3. **Result** — see the LangGraph pipeline trace, agent reasoning, path options, timeline, and risks.
+2. **Clarify** — see the Assessor's verdict and concerns. If the verdict is `proceed`, answer 3–5 clarification questions. If not (`caution`, `reframe`, `refuse_framing`), you can read the critique and decide to refine your idea or continue anyway.
+3. **Result** — see the pipeline trace, agent reasoning, strategic path options, timeline, and risks.
