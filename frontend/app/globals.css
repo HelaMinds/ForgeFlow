@@ -2,6 +2,108 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply bg-slate-950 text-slate-100;
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900 font-sans transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100;
+    background-image:
+      radial-gradient(70% 55% at 50% -10%, rgba(249, 115, 22, 0.10) 0%, rgba(249, 115, 22, 0) 60%),
+      radial-gradient(50% 40% at 100% 0%, rgba(99, 102, 241, 0.07) 0%, rgba(99, 102, 241, 0) 55%);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+  }
+
+  .dark body {
+    background-image:
+      radial-gradient(70% 55% at 50% -10%, rgba(249, 115, 22, 0.16) 0%, rgba(249, 115, 22, 0) 60%),
+      radial-gradient(50% 40% at 100% 0%, rgba(99, 102, 241, 0.12) 0%, rgba(99, 102, 241, 0) 55%);
+  }
+
+  ::selection {
+    @apply bg-orange-200/70 text-orange-950;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-slate-200/80 bg-white shadow-card
+      dark:border-slate-800 dark:bg-slate-900 dark:shadow-none;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-brand-gradient px-5 py-3
+      font-semibold text-white shadow-glow transition-all duration-200
+      hover:-translate-y-0.5 hover:shadow-glow-lg
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2
+      focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-950
+      disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-glow;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3
+      font-medium text-slate-700 shadow-soft transition-all duration-200
+      hover:border-slate-300 hover:bg-slate-50
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2
+      focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-950
+      dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:bg-slate-800;
+  }
+
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.2em] text-orange-600 dark:text-orange-400;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .skeleton {
+    @apply relative overflow-hidden bg-slate-200/70 dark:bg-slate-800/70;
+  }
+
+  .skeleton::after {
+    content: '';
+    @apply absolute inset-0 -translate-x-full animate-shimmer;
+    background-image: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.7) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
+
+  .animation-delay-150 {
+    animation-delay: 150ms;
+  }
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
+  .animation-delay-450 {
+    animation-delay: 450ms;
+  }
+}
+
+/* Refined scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.5) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.45);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(100, 116, 139, 0.6);
 }

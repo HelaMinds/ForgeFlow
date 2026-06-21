@@ -17,7 +17,7 @@ function NavIcon({ id }) {
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
-      strokeWidth={1.5}
+      strokeWidth={1.6}
       stroke="currentColor"
       className="h-5 w-5 shrink-0"
       aria-hidden="true"
@@ -33,15 +33,15 @@ function SectionButton({ section, isActive, onChange, compact = false }) {
       type="button"
       onClick={() => onChange(section.id)}
       aria-current={isActive ? 'page' : undefined}
-      className={`flex items-center gap-3 rounded-lg text-sm font-medium transition ${
-        compact ? 'shrink-0 px-3 py-2 whitespace-nowrap' : 'w-full px-3 py-2.5 text-left'
+      className={`flex items-center gap-3 rounded-xl text-sm font-medium transition-all ${
+        compact ? 'shrink-0 px-3.5 py-2 whitespace-nowrap' : 'w-full px-3 py-2.5 text-left'
       } ${
         isActive
-          ? 'bg-orange-500/15 text-orange-300 ring-1 ring-orange-500/25'
-          : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200'
+          ? 'bg-orange-50 text-orange-700 shadow-soft ring-1 ring-orange-200 dark:bg-orange-500/10 dark:text-orange-300 dark:ring-orange-500/30'
+          : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white'
       }`}
     >
-      {!compact ? <NavIcon id={section.id} /> : null}
+      <NavIcon id={section.id} />
       <span>{section.label}</span>
     </button>
   );
@@ -50,7 +50,7 @@ function SectionButton({ section, isActive, onChange, compact = false }) {
 export default function ResultSidebar({ sections, activeId, onChange, orientation = 'vertical' }) {
   if (orientation === 'horizontal') {
     return (
-      <nav aria-label="Plan sections" className="overflow-x-auto border-b border-slate-800 pb-2">
+      <nav aria-label="Plan sections" className="overflow-x-auto rounded-xl border border-slate-200 bg-white p-1.5 shadow-soft dark:border-slate-800 dark:bg-slate-900">
         <ul className="flex gap-1">
           {sections.map((section) => (
             <li key={section.id}>
@@ -68,14 +68,11 @@ export default function ResultSidebar({ sections, activeId, onChange, orientatio
   }
 
   return (
-    <nav
-      aria-label="Plan sections"
-      className="flex h-full flex-col border-r border-slate-800 bg-slate-950/80"
-    >
-      <p className="px-4 pb-3 pt-4 text-[11px] font-semibold uppercase tracking-widest text-slate-500">
+    <nav aria-label="Plan sections" className="flex h-full flex-col px-3 py-5">
+      <p className="px-3 pb-3 text-[11px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">
         Sections
       </p>
-      <ul className="flex flex-1 flex-col gap-1 px-2 pb-4">
+      <ul className="flex flex-1 flex-col gap-1">
         {sections.map((section) => (
           <li key={section.id}>
             <SectionButton

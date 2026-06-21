@@ -35,7 +35,12 @@ async function request(path, options) {
     );
   }
 
-  const data = await response.json();
+  let data;
+  try {
+    data = await response.json();
+  } catch {
+    throw new Error(`Server error (${response.status}). Check the backend is running and try again.`);
+  }
 
   if (!response.ok) {
     throw new Error(data.error || 'Request failed');

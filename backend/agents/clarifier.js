@@ -10,20 +10,22 @@ Return JSON with keys: summary, goals, constraints, questions.
 - summary: one sentence restating the idea
 - goals: array of concise goal strings
 - constraints: array of known or inferred constraints
-- questions: array of exactly 3-5 objects, each with:
+- questions: array of objects, each with:
   - id: short snake_case key (e.g. "target_market_size", "pricing_strategy", "competitors", "mvp_features")
   - text: one specific question the user must answer
   - type: must always be "choice" — never "text"
-  - options: array of exactly 4-5 concrete, mutually exclusive answer choices tailored to the idea (required)
+  - options: array of exactly 3-4 concrete, mutually exclusive answer choices tailored to the idea (required)
 
 Question rules:
-- Ask exactly 3-5 questions. Every question MUST be type "choice" with 4-5 selectable options.
+- Ask as FEW questions as possible — between 2 and 5. Fewer is better. Only ask about gaps that would
+  MATERIALLY change the execution plan. If two questions overlap, keep the more important one.
+- Every question MUST be type "choice" with exactly 3-4 selectable options. Do NOT exceed 4 options.
+- Do NOT add an "Other"/"Something else" option yourself — the app adds a "type your own answer" choice automatically.
 - Do NOT use free-text questions. Do NOT ask vague questions like "Tell me more about your idea".
 - Target gaps that would change the plan: target market size, pricing, competitors, MVP features, budget, timeline, skills, success metric, scope.
-- Each options array must contain realistic, specific choices — not "Option 1/2/3". Example for market size: ["Under 10k businesses", "10k–100k", "100k–1M", "Over 1M"].
-- Example for pricing: ["Under $10/month", "$10–$30/month", "$30–$99/month", "Freemium + paid tiers"].
-- Example for competitors: list 4-5 real or plausible competitor categories/names relevant to the idea domain.
-- Example for MVP features: ["Invoicing only", "Invoicing + expenses", "Full accounting suite", "Integrations-first MVP"].`;
+- Each options array must contain realistic, specific choices — not "Option 1/2/3". Example for market size: ["Under 10k businesses", "10k–100k", "100k–1M"].
+- Example for pricing: ["Under $10/month", "$10–$30/month", "Freemium + paid tiers"].
+- Example for MVP features: ["Invoicing only", "Invoicing + expenses", "Full accounting suite"].`;
 
 function normalizeQuestions(result) {
   const rawQuestions = Array.isArray(result.questions) && result.questions.length > 0
@@ -43,6 +45,9 @@ function normalizeQuestions(result) {
           .filter(Boolean)
         : [];
 
+      // Drop any "Other"-style option the model may have added; the UI supplies its own.
+      options = options.filter((option) => !/^(other|something else|none of)/i.test(option));
+
       if (options.length < 2) {
         options = inferDefaultOptions(id, text);
       }
@@ -51,7 +56,9 @@ function normalizeQuestions(result) {
         id,
         text,
         type: 'choice',
-        options: options.slice(0, 5),
+        // Cap concrete options at 4 so that, with the UI's "type your own" choice,
+        // each question shows at most 5 options.
+        options: options.slice(0, 4),
       };
     })
     .filter((question) => question.text)
