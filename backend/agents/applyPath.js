@@ -1,5 +1,6 @@
 const { runStructuredPrompt } = require('../services/llm');
 const { normalizeFinalPlan } = require('../../shared/planUtils');
+const { buildPathAdapterTrace } = require('../graph/pipelineTrace');
 
 const SYSTEM_PROMPT = `You are the ForgeFlow Path Adapter.
 The user chose one strategic path for their execution plan. Reshape the plan to match that path.
@@ -51,10 +52,13 @@ async function applyPathChoice({ context, selectedPath }) {
     context.clarified,
   );
 
+  const message = result.message || `Plan updated for "${selectedPath.title}".`;
+
   return {
-    message: result.message || `Plan updated for "${selectedPath.title}".`,
+    message,
     finalPlan: merged,
     selectedPath,
+    traceEntry: buildPathAdapterTrace(selectedPath, message),
   };
 }
 

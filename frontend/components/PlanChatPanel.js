@@ -51,10 +51,19 @@ export default function PlanChatPanel({ result, onPlanUpdate }) {
         history: history.slice(0, -1),
       });
 
-      setMessages((current) => [...current, { role: 'assistant', content: response.reply }]);
+      const changed = Array.isArray(response.changed) ? response.changed : [];
+
+      setMessages((current) => [
+        ...current,
+        { role: 'assistant', content: response.reply, changed },
+      ]);
 
       if (response.updates?.finalPlan || response.updates?.clarified) {
-        onPlanUpdate(response.updates);
+        onPlanUpdate({
+          updates: response.updates,
+          traceEntry: response.traceEntry,
+          changed,
+        });
       }
     } catch (err) {
       setError(err.message || 'Chat request failed');
@@ -95,6 +104,24 @@ export default function PlanChatPanel({ result, onPlanUpdate }) {
             }`}
           >
             {message.content}
+            {message.changed?.length ? (
+              <div className="mt-2 flex flex-wrap items-center gap-1.5 border-t border-slate-200/70 pt-2 dark:border-slate-700/70">
+                <span className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">
+                  <svg viewBox="0 0 20 20" fill="currentColor" className="h-3 w-3" aria-hidden="true">
+                    <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clipRule="evenodd" />
+                  </svg>
+                  Updated
+                </span>
+                {message.changed.map((field) => (
+                  <span
+                    key={field}
+                    className="rounded-md bg-emerald-50 px-1.5 py-0.5 text-[11px] font-medium text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300"
+                  >
+                    {field}
+                  </span>
+                ))}
+              </div>
+            ) : null}
           </div>
         ))}
 

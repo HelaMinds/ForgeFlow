@@ -74,17 +74,21 @@ export default function TimelineFlow({ roadmap, timeline }) {
 
                 {step.tasks.length ? (
                   <div className="mt-4">
-                    <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">To do</p>
+                    <p className="mb-2.5 text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">Key activities</p>
                     <ul className="space-y-2">
                       {step.tasks.map((task) => (
                         <li
                           key={task}
-                          className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50/70 px-3 py-2.5 text-sm text-slate-700 dark:border-slate-800 dark:bg-slate-950/50 dark:text-slate-300"
+                          className="flex items-start gap-2.5 text-sm leading-relaxed text-slate-600 dark:text-slate-400"
                         >
-                          <span
+                          <svg
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
                             aria-hidden="true"
-                            className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border-2 border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-900"
-                          />
+                            className="mt-1 h-3.5 w-3.5 shrink-0 text-orange-500 dark:text-orange-400"
+                          >
+                            <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 0 1 .02-1.06L11.168 10 7.23 6.29a.75.75 0 1 1 1.04-1.08l4.5 4.25a.75.75 0 0 1 0 1.08l-4.5 4.25a.75.75 0 0 1-1.06-.02Z" clipRule="evenodd" />
+                          </svg>
                           {task}
                         </li>
                       ))}
