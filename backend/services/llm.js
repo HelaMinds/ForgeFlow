@@ -4,7 +4,7 @@ const PROVIDER = (process.env.LLM_PROVIDER || 'openai').toLowerCase();
 const ATTEMPTS_PER_MODEL = Number(process.env.LLM_RETRIES_PER_MODEL || 2);
 const BASE_DELAY_MS = 600;
 const MAX_DELAY_MS = 6000;
-const CALL_TIMEOUT_MS = Number(process.env.LLM_TIMEOUT_MS || 45000);
+const CALL_TIMEOUT_MS = Number(process.env.LLM_TIMEOUT_MS || 120000);
 
 const RETRYABLE_STATUS = new Set([408, 409, 429, 500, 502, 503, 504]);
 const RETRYABLE_CODES = new Set([
@@ -203,7 +203,7 @@ async function callAnthropic(model, { systemPrompt, userPrompt }) {
   const client = getAnthropicClient();
   const response = await client.messages.create({
     model,
-    max_tokens: 4096,
+    max_tokens: 8192,
     temperature: 0.4,
     system: `${systemPrompt}\n\nYou must respond with valid JSON only. Do not include any text outside the JSON object.`,
     messages: [{ role: 'user', content: userPrompt }],
