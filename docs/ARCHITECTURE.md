@@ -15,7 +15,7 @@ Browser (Next.js)
     ▼
 Express API (Node.js)
     │
-    ├── /api/idea/clarify   → Clarifier agent
+    ├── /api/idea/clarify   → Assessor + Clarifier agents (parallel)
     ├── /api/idea/plan      → LangGraph pipeline (Planner → Stress Tester → Synthesizer)
     ├── /api/idea/apply-path → Path Adapter agent
     └── /api/idea/chat      → Plan Refiner agent
@@ -41,11 +41,13 @@ The user types a free-text idea and optionally picks an idea type:
 | `class_project` | Coursework deadlines, rubrics, demo-ready |
 | `side_hustle` | Part-time, lean scope, low burn |
 
-The frontend calls `POST /api/idea/clarify`. The Clarifier agent runs and the structured result is saved to `sessionStorage` (`forgeflow-clarify`). The user is routed to `/clarify`.
+The frontend calls `POST /api/idea/clarify`. The Assessor and Clarifier agents run in parallel and the combined result (including `assessment`) is saved to `sessionStorage` (`forgeflow-clarify`). The user is routed to `/clarify`.
 
 ### Step 2 — Clarification (Clarify page `/clarify`)
 
-The Clarifier's output is displayed: the idea summary, detected goals, known constraints, and 3–5 multiple-choice questions. The user selects one answer per question.
+An **Idea Review** panel (`IdeaReviewPanel`) shows the Assessor's verdict and concerns first. If the verdict is `proceed`, the question form is shown immediately. If it is `caution`, `reframe`, or `refuse_framing`, the form is held behind a conscious choice: **Refine idea** (back to home) or **Continue anyway**. The gate never hard-blocks the user.
+
+The Clarifier's output is then displayed: the idea summary, detected goals, known constraints, and 3–5 multiple-choice questions. The user selects one answer per question.
 
 These answers shape the plan — the system will not guess on the user's behalf.
 
@@ -71,6 +73,24 @@ A persistent **chat panel** on the right lets the user refine the plan conversat
 ## Backend agents
 
 All agents call the same `runStructuredPrompt()` helper in `backend/services/llm.js`, which calls `gpt-4o` with `response_format: json_object` and `temperature: 0.4`. Every agent receives a system prompt defining its role and the expected JSON schema, and a user prompt with the current pipeline state.
+
+### Assessor (`backend/agents/assessor.js`)
+
+**Input:** raw idea text + optional idea type
+**Output:** `assessment`
+
+```
+{
+  verdict,            // 'proceed' | 'caution' | 'reframe' | 'refuse_framing'
+  headline,           // one-sentence judgment
+  concerns,           // 2-5 { dimension, severity, title, detail }
+  saferAlternative,   // { summary, why } | null (required when verdict = 'reframe')
+  injectionDetected,  // boolean — idea tried to suppress honest evaluation
+  recommendation      // one actionable line
+}
+```
+
+The critical gate that runs **before** planning, in parallel with the Clarifier. It judges the idea across scope/clarity, feasibility, ethics/legal, and market/viability, and never blocks the user — it informs the front-end gate. The idea text is wrapped in `<idea>` delimiters and treated as untrusted data; attempts to demand only-positive feedback or to "ignore the rules" set `verdict: 'refuse_framing'` and `injectionDetected: true` while the assessment proceeds honestly. A `reframe` verdict without a `saferAlternative` is softened to `caution`.
 
 ### Clarifier (`backend/agents/clarifier.js`)
 
@@ -264,7 +284,7 @@ All routes under `POST /api/idea/`:
 
 | Endpoint | Input | Output |
 |---|---|---|
-| `/clarify` | `{ idea, ideaType? }` | `{ idea, ideaType, clarified, pipelineTrace }` |
+| `/clarify` | `{ idea, ideaType? }` | `{ idea, ideaType, assessment, clarified, pipelineTrace }` |
 | `/plan` | `{ idea, answers, clarified? }` | Full pipeline result with `finalPlan`, `stressTest`, `reasoning`, `pipelineTrace` |
 | `/apply-path` | `{ context, selectedPath }` | `{ message, finalPlan, selectedPath }` |
 | `/chat` | `{ message, context, history? }` | `{ reply, updates }` |

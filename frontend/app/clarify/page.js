@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ClarifyForm from '../../components/ClarifyForm';
+import IdeaReviewPanel from '../../components/IdeaReviewPanel';
 import PipelineTrace from '../../components/PipelineTrace';
 import ResponsibleAiNotice from '../../components/ResponsibleAiNotice';
 import PlanGenerationOverlay from '../../components/PlanGenerationOverlay';
@@ -16,6 +17,7 @@ export default function ClarifyPage() {
   const [clarifyData, setClarifyData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [acknowledged, setAcknowledged] = useState(false);
 
   useEffect(() => {
     const stored = sessionStorage.getItem('forgeflow-clarify');
@@ -57,7 +59,9 @@ export default function ClarifyPage() {
     );
   }
 
-  const { idea, ideaType, clarified, pipelineTrace = [] } = clarifyData;
+  const { idea, ideaType, clarified, assessment, pipelineTrace = [] } = clarifyData;
+  const needsAcknowledgement = Boolean(assessment) && assessment.verdict !== 'proceed';
+  const showForm = !needsAcknowledgement || acknowledged;
   const questions = ensureChoiceQuestions(
     clarified.questions?.length
       ? clarified.questions
@@ -153,11 +157,29 @@ export default function ClarifyPage() {
           </div>
         ) : null}
 
+        <IdeaReviewPanel assessment={assessment} />
+
         <div className="mb-6">
           <ResponsibleAiNotice variant="compact" />
         </div>
 
-        <ClarifyForm questions={questions} onSubmit={handleSubmit} loading={loading} />
+        {showForm ? (
+          <ClarifyForm questions={questions} onSubmit={handleSubmit} loading={loading} />
+        ) : (
+          <div className="card flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              Read the review above. You can refine your idea, or continue planning with it as-is.
+            </p>
+            <div className="flex shrink-0 gap-3">
+              <Link href="/" className="btn-secondary">
+                Refine idea
+              </Link>
+              <button type="button" onClick={() => setAcknowledged(true)} className="btn-primary">
+                Continue anyway
+              </button>
+            </div>
+          </div>
+        )}
 
         {error ? (
           <div
