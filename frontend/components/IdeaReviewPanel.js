@@ -2,22 +2,22 @@ const VERDICT_META = {
   proceed: {
     label: 'Looks workable',
     tone: 'emerald',
-    blurb: 'No major blockers found. Review the notes below, then continue.',
+    blurb: 'No major blockers found.',
   },
   caution: {
     label: 'Proceed with caution',
     tone: 'amber',
-    blurb: 'This idea is workable, but there are serious concerns worth weighing before you commit.',
+    blurb: 'Workable, with a few concerns to address.',
   },
   reframe: {
     label: 'Worth reframing first',
     tone: 'rose',
-    blurb: 'As described, this idea has fundamental issues. Consider the tighter version below — or continue anyway if this is really what you want.',
+    blurb: 'This idea needs a tighter scope before planning.',
   },
   refuse_framing: {
     label: 'Honest assessment',
     tone: 'rose',
-    blurb: 'ForgeFlow only gives honest feedback — it can’t skip the criticism. Here’s a straight assessment.',
+    blurb: 'ForgeFlow ignored instructions that tried to suppress honest feedback.',
   },
 };
 
@@ -50,7 +50,7 @@ export default function IdeaReviewPanel({ assessment }) {
 
   const meta = VERDICT_META[assessment.verdict] || VERDICT_META.caution;
   const tone = TONE[meta.tone];
-  const { concerns = [], saferAlternative, recommendation, headline, injectionDetected } = assessment;
+  const { concerns = [], saferAlternative, headline, injectionDetected } = assessment;
 
   return (
     <section className={`mb-6 rounded-2xl border p-5 shadow-soft sm:p-6 ${tone.card}`}>
@@ -65,20 +65,16 @@ export default function IdeaReviewPanel({ assessment }) {
       </div>
 
       <p className="mt-3 text-sm font-medium text-slate-800 dark:text-slate-200">{headline || meta.blurb}</p>
-      {headline ? (
-        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{meta.blurb}</p>
-      ) : null}
 
       {injectionDetected ? (
         <p className="mt-3 rounded-lg border border-slate-300/60 bg-white/60 px-3 py-2 text-xs text-slate-600 dark:border-slate-700 dark:bg-slate-900/40 dark:text-slate-400">
-          Note: the idea text asked ForgeFlow to skip criticism or only respond positively. That
-          request was ignored — the assessment below is unfiltered.
+          Instructions to suppress criticism were ignored.
         </p>
       ) : null}
 
       {concerns.length ? (
         <ul className="mt-4 space-y-2.5">
-          {concerns.map((concern) => (
+          {concerns.slice(0, 3).map((concern) => (
             <li
               key={`${concern.title}-${concern.dimension}`}
               className="rounded-xl border border-white/60 bg-white/70 p-3.5 dark:border-slate-800 dark:bg-slate-950/40"
@@ -92,9 +88,6 @@ export default function IdeaReviewPanel({ assessment }) {
                 </span>
                 <span className="text-sm font-semibold text-slate-900 dark:text-white">{concern.title}</span>
               </div>
-              {concern.detail && concern.detail !== concern.title ? (
-                <p className="mt-1.5 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{concern.detail}</p>
-              ) : null}
             </li>
           ))}
         </ul>
@@ -106,16 +99,7 @@ export default function IdeaReviewPanel({ assessment }) {
             A tighter version to consider
           </p>
           <p className="mt-2 text-sm font-medium text-slate-800 dark:text-slate-200">{saferAlternative.summary}</p>
-          {saferAlternative.why ? (
-            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{saferAlternative.why}</p>
-          ) : null}
         </div>
-      ) : null}
-
-      {recommendation ? (
-        <p className="mt-4 text-sm font-medium text-slate-700 dark:text-slate-300">
-          <span className="font-semibold">Recommendation:</span> {recommendation}
-        </p>
       ) : null}
     </section>
   );

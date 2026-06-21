@@ -19,6 +19,24 @@ function normalizeReasoningItem(item) {
     return item.title.trim();
   }
 
+  if (typeof item.assumption === 'string') {
+    return [
+      item.assumption.trim(),
+      typeof item.why_weak === 'string' && item.why_weak.trim()
+        ? `Why it is weak: ${item.why_weak.trim()}`
+        : null,
+      typeof item.impact === 'string' && item.impact.trim()
+        ? `Impact: ${item.impact.trim()}`
+        : null,
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
+
+  if (typeof item.failureMode === 'string' || typeof item.failure_mode === 'string') {
+    return (item.failureMode || item.failure_mode).trim();
+  }
+
   if (item.from && item.to) {
     return `${item.from} → ${item.to}`;
   }
@@ -31,7 +49,10 @@ function normalizeReasoningItem(item) {
     return `${item.dependency} blocked by ${item.blockedBy}`;
   }
 
-  return JSON.stringify(item);
+  return Object.values(item)
+    .filter((value) => typeof value === 'string' && value.trim())
+    .map((value) => value.trim())
+    .join(' ');
 }
 
 function normalizeReasoningList(items) {

@@ -26,7 +26,7 @@ export default function ResponsibleAiNotice({ confidenceNote, variant = 'default
           </p>
           <p className={`mt-1 text-slate-600 dark:text-slate-300 ${isCompact ? 'text-xs' : 'text-sm'}`}>
             ForgeFlow helps you think through an idea with structured AI analysis. You stay in
-            control — verify assumptions, adjust scope, and decide whether to act.
+            control. Verify assumptions, adjust scope, and decide whether to act.
           </p>
           {confidenceNote ? (
             <p className={`mt-3 border-t border-indigo-100 pt-3 text-slate-600 dark:border-indigo-500/20 dark:text-slate-300 ${isCompact ? 'text-xs' : 'text-sm'}`}>

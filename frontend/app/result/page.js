@@ -243,7 +243,7 @@ export default function ResultPage() {
               <div className="mx-auto max-w-4xl animate-fade-in">
                 <SectionIntro
                   title="Execution timeline"
-                  description="A sequenced view of your journey — each phase builds on the one before it."
+                  description="A sequenced view of your journey. Each phase builds on the one before it."
                 />
                 {selectedPath ? (
                   <div className="mb-6 flex items-start gap-2.5 rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-3 dark:border-indigo-500/30 dark:bg-indigo-500/10">
@@ -298,7 +298,7 @@ export default function ResultPage() {
                   {normalizeReasoningList(stressTest?.failureModes).length > 0 ? (
                     <div className="card border-rose-200 p-5 dark:border-rose-500/30">
                       <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-                        Failure modes — how this could go wrong
+                        Failure modes: how this could go wrong
                       </p>
                       <ul className="mt-3 space-y-2">
                         {normalizeReasoningList(stressTest?.failureModes).map((item, index) => (
@@ -321,7 +321,7 @@ export default function ResultPage() {
               <div className="mx-auto max-w-4xl space-y-6 animate-fade-in">
                 <SectionIntro
                   title="Start here"
-                  description="Your launch kit — the single first move, this week's focus, and what to de-risk before you commit."
+                  description="Your launch kit: the single first move, this week's focus, and what to de-risk before you commit."
                 />
 
                 <div className="relative overflow-hidden rounded-2xl border border-orange-200 bg-gradient-to-br from-orange-50 to-amber-50 p-6 shadow-card dark:border-orange-500/30 dark:from-orange-500/10 dark:to-amber-500/5">

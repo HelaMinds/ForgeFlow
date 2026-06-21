@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
-function buildSuggestions(assessment) {
+function buildSuggestions(assessment, limit) {
   const suggestions = [];
 
   if (assessment?.saferAlternative?.summary) {
@@ -31,14 +31,24 @@ function buildSuggestions(assessment) {
     }
   }
 
-  return suggestions.slice(0, 5);
+  return suggestions.slice(0, limit);
 }
 
-export default function IdeaRefinePanel({ idea, assessment, onRefine, onContinue, refining = false }) {
+export default function IdeaRefinePanel({
+  idea,
+  assessment,
+  onRefine,
+  onContinue,
+  refining = false,
+  hasReanalyzed = false,
+}) {
   const [draft, setDraft] = useState(idea || '');
   const [editing, setEditing] = useState(false);
 
-  const suggestions = useMemo(() => buildSuggestions(assessment), [assessment]);
+  const suggestions = useMemo(
+    () => buildSuggestions(assessment, hasReanalyzed ? 2 : 4),
+    [assessment, hasReanalyzed],
+  );
 
   useEffect(() => {
     setDraft(idea || '');
@@ -75,8 +85,7 @@ export default function IdeaRefinePanel({ idea, assessment, onRefine, onContinue
           Refine your idea
         </h2>
         <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-          The Assessor flagged gaps in your idea. Edit below, tap a suggestion to add it, then re-analyze.
-          Once the Assessor is confident, you&apos;ll move to clarifying questions automatically.
+          Edit your idea or add a useful suggestion, then re-analyze it.
         </p>
       </div>
 
@@ -93,7 +102,7 @@ export default function IdeaRefinePanel({ idea, assessment, onRefine, onContinue
             onChange={(event) => setDraft(event.target.value)}
             readOnly={!editing}
             rows={4}
-            placeholder="Describe your idea…"
+            placeholder="Describe your idea..."
             className={`w-full resize-none bg-transparent px-3 py-2.5 text-sm leading-relaxed text-slate-900 outline-none dark:text-slate-100 ${
               editing ? '' : 'cursor-default text-slate-700 dark:text-slate-300'
             }`}
@@ -115,15 +124,15 @@ export default function IdeaRefinePanel({ idea, assessment, onRefine, onContinue
               disabled={!draft.trim() || refining || draft.trim() === idea?.trim()}
               className="inline-flex items-center gap-1.5 rounded-lg bg-brand-gradient px-3 py-1.5 text-xs font-semibold text-white shadow-glow transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
             >
-              {refining ? 'Re-analyzing…' : 'Re-analyze idea'}
+              {refining ? 'Re-analyzing...' : 'Re-analyze idea'}
             </button>
           </div>
         </div>
       </form>
 
-      {suggestions.length ? (
+      {!hasReanalyzed && suggestions.length ? (
         <div className="mt-4">
-          <p className="text-xs font-medium text-slate-400 dark:text-slate-500">Suggestions — click to add:</p>
+          <p className="text-xs font-medium text-slate-400 dark:text-slate-500">Suggestions to add:</p>
           <div className="mt-2 flex flex-wrap gap-2">
             {suggestions.map((suggestion) => (
               <button
@@ -142,7 +151,7 @@ export default function IdeaRefinePanel({ idea, assessment, onRefine, onContinue
 
       <div className="mt-5 flex flex-col gap-3 border-t border-slate-100 pt-5 dark:border-slate-800 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-slate-600 dark:text-slate-400">
-          Re-analyze after editing. If the Assessor approves your idea, clarifying questions appear next.
+          {hasReanalyzed ? 'Your revised idea is ready for the next step.' : 'You can continue without making changes.'}
         </p>
         <button
           type="button"
@@ -150,9 +159,28 @@ export default function IdeaRefinePanel({ idea, assessment, onRefine, onContinue
           disabled={refining}
           className="btn-secondary shrink-0 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Skip review &amp; continue
+          {hasReanalyzed ? 'Continue' : 'Skip review & continue'}
         </button>
       </div>
+
+      {hasReanalyzed && suggestions.length ? (
+        <div className="mt-4">
+          <p className="text-xs font-medium text-slate-400 dark:text-slate-500">Optional final touches:</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {suggestions.map((suggestion) => (
+              <button
+                key={suggestion}
+                type="button"
+                onClick={() => handleSuggestionClick(suggestion)}
+                disabled={refining}
+                className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-left text-xs leading-relaxed text-slate-700 transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-800 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300 dark:hover:border-orange-500/40 dark:hover:bg-orange-500/10 dark:hover:text-orange-300"
+              >
+                + {suggestion}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }

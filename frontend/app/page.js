@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import InputBox from '../components/InputBox';
@@ -60,10 +61,15 @@ export default function HomePage() {
     <main className="relative mx-auto flex min-h-screen max-w-6xl flex-col px-6 py-10 sm:py-16">
       <header className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-gradient shadow-glow">
-            <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5 text-white" aria-hidden="true">
-              <path d="M13 3 4 14h7l-1 7 9-11h-7l1-7Z" fill="currentColor" />
-            </svg>
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full">
+            <Image
+              src="/forgeflow-logo-v2.png"
+              alt="ForgeFlow logo"
+              width={48}
+              height={48}
+              priority
+              className="h-12 w-12 object-contain"
+            />
           </span>
           <span className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">ForgeFlow</span>
         </div>
@@ -94,7 +100,7 @@ export default function HomePage() {
           </h1>
 
           <p className="mt-5 max-w-xl text-balance text-lg leading-relaxed text-slate-600 dark:text-slate-300">
-            Five specialized AI agents — Assessor, Clarifier, Planner, Stress Tester, and Synthesizer —
+            Five specialized AI agents: Assessor, Clarifier, Planner, Stress Tester, and Synthesizer.
             work in sequence to structure your thinking. You answer the hard questions; the agents
             do the analysis.
           </p>
@@ -135,7 +141,7 @@ export default function HomePage() {
             <div className="mb-6">
               <h2 className="text-xl font-bold text-slate-900 dark:text-white">Describe your idea</h2>
               <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-                Start rough — the Clarifier agent will fill in the gaps.
+                Start rough. The Clarifier agent will fill in the gaps.
               </p>
             </div>
 

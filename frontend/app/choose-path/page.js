@@ -104,7 +104,7 @@ export default function ChoosePathPage() {
             How do you want to build this?
           </h1>
           <p className="mt-3 max-w-xl text-slate-600 dark:text-slate-400">
-            The Synthesizer surfaced strategic options — you pick the approach. ForgeFlow will reshape your
+            The Synthesizer surfaced strategic options. You pick the approach, and ForgeFlow will reshape your
             timeline, tasks, and first action to match. This is your call, not the AI&apos;s.
           </p>
         </div>

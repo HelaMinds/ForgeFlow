@@ -151,7 +151,7 @@ export default function PipelineTrace({ trace, reasoning, clarified, activeStage
       <div className="mb-5">
         <h2 className="text-lg font-bold text-slate-900 dark:text-white">How ForgeFlow built this plan</h2>
         <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-          Five specialized agents built this plan — each step shows what it produced and the reasoning behind it.
+          Five specialized agents built this plan. Each step shows what it produced and the reasoning behind it.
         </p>
       </div>
 
@@ -237,7 +237,7 @@ export default function PipelineTrace({ trace, reasoning, clarified, activeStage
           <p className="eyebrow">After you got involved</p>
           <h3 className="mt-1 font-semibold text-slate-900 dark:text-white">Your refinements</h3>
           <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-            These agents ran in response to your decisions — proof the plan adapts to you, not the other way around.
+            These agents ran in response to your decisions, showing that the plan adapts to you.
           </p>
           <ol className="mt-4 space-y-3">
             {refinements.map((entry, index) => (

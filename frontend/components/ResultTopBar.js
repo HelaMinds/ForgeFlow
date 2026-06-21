@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { derivePlanTitle } from '../lib/planDisplay';
 import { downloadPlanMarkdown } from '../lib/exportPlan';
@@ -11,10 +12,19 @@ export default function ResultTopBar({ finalPlan, clarified, idea }) {
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between gap-4 border-b border-slate-200 bg-white/80 px-4 py-3.5 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/80 sm:px-6">
       <div className="flex min-w-0 items-center gap-3">
-        <Link href="/" aria-label="ForgeFlow home" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-gradient shadow-glow">
-          <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5 text-white" aria-hidden="true">
-            <path d="M13 3 4 14h7l-1 7 9-11h-7l1-7Z" fill="currentColor" />
-          </svg>
+        <Link
+          href="/"
+          aria-label="ForgeFlow home"
+          className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full"
+        >
+          <Image
+            src="/forgeflow-logo-v2.png"
+            alt=""
+            width={44}
+            height={44}
+            priority
+            className="h-11 w-11 object-contain"
+          />
         </Link>
         <div className="min-w-0">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-orange-600 dark:text-orange-400">ForgeFlow</p>

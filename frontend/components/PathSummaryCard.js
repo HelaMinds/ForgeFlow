@@ -38,7 +38,7 @@ export default function PathSummaryCard({ finalPlan, selectedPath, pathApplyMess
               <>
                 <p className="mt-1 text-base font-bold text-slate-900 dark:text-white">Baseline plan</p>
                 <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-                  You skipped path selection — pick one to reshape the roadmap.
+                  You skipped path selection. Pick one to reshape the roadmap.
                 </p>
               </>
             )}

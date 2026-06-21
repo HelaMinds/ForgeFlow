@@ -6,7 +6,7 @@ import { chatWithPlan } from '../lib/api';
 const STARTER_MESSAGE = {
   role: 'assistant',
   content:
-    'Ask me to adjust your plan — change the timeline, switch to a leaner path, update pricing assumptions, or refine any section.',
+    'Ask me to adjust your plan: change the timeline, switch to a leaner path, update pricing assumptions, or refine any section.',
 };
 
 const SUGGESTIONS = ['Switch to a lean MVP path', 'Make the timeline more aggressive', 'Add a budget constraint'];

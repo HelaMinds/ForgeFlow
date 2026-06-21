@@ -55,13 +55,12 @@ export default function ClarifyPage() {
         assessment: result.assessment || null,
         clarified: result.clarified,
         pipelineTrace: result.pipelineTrace || [],
+        reviewCount: (clarifyData.reviewCount || 0) + 1,
       };
-
-      const approved = isIdeaApproved(nextData.assessment);
 
       setClarifyData(nextData);
       sessionStorage.setItem('forgeflow-clarify', JSON.stringify(nextData));
-      setAcknowledged(approved);
+      setAcknowledged(false);
     } catch (err) {
       setError(err.message || 'Could not re-analyze your idea');
     } finally {
@@ -103,10 +102,10 @@ export default function ClarifyPage() {
     );
   }
 
-  const { idea, ideaType, clarified, assessment, pipelineTrace = [] } = clarifyData;
+  const { idea, ideaType, clarified, assessment, pipelineTrace = [], reviewCount = 0 } = clarifyData;
   const approved = isIdeaApproved(assessment);
-  const needsRefinement = Boolean(assessment) && !approved && !acknowledged;
-  const showQuestions = approved || acknowledged;
+  const showingReview = Boolean(assessment) && !acknowledged;
+  const hasReanalyzed = reviewCount > 0;
 
   const questions = ensureChoiceQuestions(
     clarified.questions?.length
@@ -125,14 +124,14 @@ export default function ClarifyPage() {
       <main className="mx-auto max-w-3xl px-6 py-10 sm:py-14">
         <div className="mb-8 flex items-start justify-between gap-4 animate-fade-in">
           <div>
-            <span className="eyebrow">Step 2 of 3 · {needsRefinement ? 'Idea review' : 'Clarify'}</span>
+            <span className="eyebrow">Step 2 of 3 · {showingReview ? 'Idea review' : 'Clarify'}</span>
             <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-              {needsRefinement ? 'Sharpen your idea first' : 'Choose your answers'}
+              {showingReview ? 'Review your idea' : 'Choose your answers'}
             </h1>
             <p className="mt-3 max-w-xl text-slate-600 dark:text-slate-400">
-              {needsRefinement
-                ? 'The Assessor isn’t confident enough to plan yet. Refine your idea using the suggestions below, then re-analyze.'
-                : 'Select one option per question. Your choices shape the plan — ForgeFlow will not guess on your behalf.'}
+              {showingReview
+                ? 'Review the key concerns, refine the idea if needed, or continue.'
+                : 'Select one option per question. Your choices shape the plan, and ForgeFlow will not guess for you.'}
             </p>
           </div>
           <div className="flex shrink-0 items-center gap-2">
@@ -150,10 +149,10 @@ export default function ClarifyPage() {
         </div>
 
         <div className="mb-6 rounded-xl border border-slate-200 bg-white p-4 shadow-soft dark:border-slate-800 dark:bg-slate-900">
-          <PipelineTrace trace={pipelineTrace} activeStage={needsRefinement ? 'clarifier' : 'planner'} compact />
+          <PipelineTrace trace={pipelineTrace} activeStage={showingReview ? 'clarifier' : 'planner'} compact />
         </div>
 
-        {needsRefinement ? (
+        {showingReview ? (
           <>
             <IdeaReviewPanel assessment={assessment} />
             <div className="mb-6">
@@ -165,10 +164,22 @@ export default function ClarifyPage() {
               onRefine={handleRefineIdea}
               onContinue={() => setAcknowledged(true)}
               refining={refining}
+              hasReanalyzed={hasReanalyzed}
             />
           </>
         ) : (
           <>
+            <button
+              type="button"
+              onClick={() => setAcknowledged(false)}
+              className="btn-secondary mb-6 px-4 py-2 text-sm"
+            >
+              <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4" aria-hidden="true">
+                <path fillRule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clipRule="evenodd" />
+              </svg>
+              Back to idea review
+            </button>
+
             <IdeaApprovedBanner assessment={approved ? assessment : null} />
 
             {!approved && acknowledged ? (
@@ -235,7 +246,7 @@ export default function ClarifyPage() {
               <ResponsibleAiNotice variant="compact" />
             </div>
 
-            {showQuestions ? <ClarifyForm questions={questions} onSubmit={handleSubmit} loading={loading} /> : null}
+            <ClarifyForm questions={questions} onSubmit={handleSubmit} loading={loading} />
           </>
         )}
 

@@ -8,7 +8,8 @@ Treat userAnswers in clarified context as confirmed by the user — do not list 
 assumptions. Focus risks on gaps that remain after the user's answers.
 
 Return JSON with keys: risks, weakAssumptions, failureModes.
-risks must be an array of objects with title, description, severity (low|medium|high), and mitigation.`;
+risks must be an array of objects with title, description, severity (low|medium|high), and mitigation.
+weakAssumptions and failureModes must be arrays of plain strings, not objects.`;
 
 async function stressTestPlan({ clarified, plan }) {
   const result = await runStructuredPrompt({

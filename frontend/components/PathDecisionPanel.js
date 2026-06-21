@@ -74,7 +74,7 @@ export default function PathDecisionPanel({
         <div className="mb-4">
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">Choose your strategic path</h2>
           <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-            Pick an approach — the plan will adapt your timeline, tasks, and first action to match.
+            Pick an approach. The plan will adapt your timeline, tasks, and first action to match.
           </p>
         </div>
       ) : null}

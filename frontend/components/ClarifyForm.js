@@ -67,7 +67,7 @@ function QuestionField({ question, choice, customText, onSelect, onCustom }) {
             className="sr-only"
           />
           <span className={`text-sm leading-relaxed ${isOther ? 'font-medium text-slate-900 dark:text-white' : 'text-slate-700 dark:text-slate-300'}`}>
-            Other — type your own answer
+            Other: type your own answer
           </span>
         </label>
 

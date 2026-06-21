@@ -13,7 +13,7 @@ export default function IdeaApprovedBanner({ assessment }) {
       <div>
         <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-200">Assessor: looks workable</p>
         <p className="mt-0.5 text-sm text-emerald-700 dark:text-emerald-300">
-          {assessment.headline || 'Your idea is clear enough to plan — answer the questions below.'}
+          {assessment.headline || 'Your idea is clear enough to plan. Answer the questions below.'}
         </p>
       </div>
     </div>

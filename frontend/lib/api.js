@@ -7,12 +7,12 @@ export const IDEA_TYPES = [
   {
     id: 'class_project',
     label: 'Class project',
-    description: 'Scoped for coursework — deadlines, rubrics, and demo-ready deliverables.',
+    description: 'Scoped for coursework, deadlines, rubrics, and demo-ready deliverables.',
   },
   {
     id: 'side_hustle',
     label: 'Side hustle',
-    description: 'Part-time effort alongside other work — lean scope and low burn.',
+    description: 'Part-time effort alongside other work, with lean scope and low burn.',
   },
 ];
 
