@@ -41,7 +41,7 @@ mandatory human gate, call it out.
 
 1. **Overview** — concise title + executive overview + stats (type, phases, duration).
    "Six agents produced this, not one prompt."
-2. **Pipeline tab** — Clarifier → Planner → Stress Tester → Synthesizer, each with a real
+2. **Pipeline tab** — Assessor → Clarifier → Planner → Stress Tester → Synthesizer, each with a real
    summary. "This is the AI thinking, exposed."
 3. **Risks tab** — risk cards + **weak assumptions** + **failure modes** from the adversarial
    Stress Tester. This is your Responsible AI beat.

@@ -1,8 +1,9 @@
 import { isUserAnswerConstraint, normalizeReasoningList } from '../lib/reasoningUtils';
 
-const STAGE_ORDER = ['clarifier', 'planner', 'stressTester', 'synthesizer'];
+const STAGE_ORDER = ['assessor', 'clarifier', 'planner', 'stressTester', 'synthesizer'];
 
 const STAGE_LABELS = {
+  assessor: 'Assess',
   clarifier: 'Clarify',
   planner: 'Plan',
   stressTester: 'Stress test',
@@ -10,10 +11,11 @@ const STAGE_LABELS = {
 };
 
 const STAGE_INDEX = {
-  clarifier: '1',
-  planner: '2',
-  stressTester: '3',
-  synthesizer: '4',
+  assessor: '1',
+  clarifier: '2',
+  planner: '3',
+  stressTester: '4',
+  synthesizer: '5',
 };
 
 const REASONING_BY_STAGE = {
@@ -149,7 +151,7 @@ export default function PipelineTrace({ trace, reasoning, clarified, activeStage
       <div className="mb-5">
         <h2 className="text-lg font-bold text-slate-900 dark:text-white">How ForgeFlow built this plan</h2>
         <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-          Four specialized agents ran in sequence — each step shows what it produced and the reasoning behind it.
+          Five specialized agents built this plan — each step shows what it produced and the reasoning behind it.
         </p>
       </div>
 

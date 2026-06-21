@@ -2,10 +2,11 @@
 
 ## Pipeline Overview
 
-1. **Clarifier** — Refines the raw user idea into goals, constraints, and open questions.
-2. **Planner** — Produces a phased execution plan with assumptions and dependencies.
-3. **Stress Tester** — Surfaces risks, weak assumptions, and failure modes.
-4. **Synthesizer** — Merges all stages into a final roadmap with a first action.
+1. **Assessor** — Evaluates feasibility, risks, ethics, and framing before planning.
+2. **Clarifier** — Refines the raw user idea into goals, constraints, and open questions.
+3. **Planner** — Produces a phased execution plan with assumptions and dependencies.
+4. **Stress Tester** — Surfaces risks, weak assumptions, and failure modes.
+5. **Synthesizer** — Merges all stages into a final roadmap with a first action.
 
 ## Development Notes
 

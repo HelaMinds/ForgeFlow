@@ -2,6 +2,7 @@ const { clarifyIdea } = require('../agents/clarifier');
 const { assessIdea } = require('../agents/assessor');
 const { runPlanPipeline } = require('./langgraphPipeline');
 const {
+  buildAssessorTrace,
   buildClarifierTrace,
   buildReasoning,
 } = require('./pipelineTrace');
@@ -54,7 +55,7 @@ async function runClarify({ idea, ideaType }) {
     assessIdea(idea, ideaType),
     clarifyIdea(idea, ideaType),
   ]);
-  const pipelineTrace = [buildClarifierTrace(clarified)];
+  const pipelineTrace = [buildAssessorTrace(assessment), buildClarifierTrace(clarified)];
 
   return {
     idea,
@@ -65,12 +66,15 @@ async function runClarify({ idea, ideaType }) {
   };
 }
 
-async function runPlanFromAnswers({ idea, answers, clarified }) {
+async function runPlanFromAnswers({ idea, answers, clarified, assessment }) {
   const baseClarified = clarified || (await clarifyIdea(idea));
   const clarifiedSnapshot = snapshotClarified(baseClarified);
   const enrichedClarified = mergeAnswersIntoClarified(baseClarified, answers);
 
-  const clarifierTrace = [buildClarifierTrace(baseClarified)];
+  const initialTrace = [
+    assessment ? buildAssessorTrace(assessment) : null,
+    buildClarifierTrace(baseClarified),
+  ].filter(Boolean);
 
   const { plan, stressTest, finalPlan, pipelineTrace } = await runPlanPipeline({
     idea,
@@ -88,7 +92,7 @@ async function runPlanFromAnswers({ idea, answers, clarified }) {
     plan,
     stressTest,
     finalPlan,
-    pipelineTrace: [...clarifierTrace, ...pipelineTrace],
+    pipelineTrace: [...initialTrace, ...pipelineTrace],
   };
 }
 

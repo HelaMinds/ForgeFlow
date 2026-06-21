@@ -2,7 +2,7 @@
 
 ## What it does
 
-ForgeFlow converts a vague business or project idea into a structured, risk-aware execution roadmap. The user describes their idea in plain text; a four-agent AI pipeline turns that into phased plans, risk assessments, and strategic path options — all shaped by explicit answers the user provides rather than LLM guesses.
+ForgeFlow converts a vague business or project idea into a structured, risk-aware execution roadmap. The user describes their idea in plain text; a five-agent AI pipeline turns that into phased plans, risk assessments, and strategic path options — all shaped by explicit answers the user provides rather than LLM guesses.
 
 ---
 

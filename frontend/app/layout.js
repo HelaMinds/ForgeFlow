@@ -10,7 +10,7 @@ const inter = Inter({
 export const metadata = {
   title: 'ForgeFlow — Turn ideas into execution plans',
   description:
-    'A four-agent AI pipeline that turns vague ideas into structured, risk-aware execution roadmaps.',
+    'A five-agent AI pipeline that turns vague ideas into structured, risk-aware execution roadmaps.',
 };
 
 // Runs before paint to set the theme class, preventing a flash of the wrong theme.

@@ -1,6 +1,6 @@
 # ForgeFlow
 
-ForgeFlow is a structured AI-powered system that turns vague ideas into clear, actionable execution plans. It runs ideas through a **critical-assessment gate** (Assessor), then a **multi-agent pipeline** — **Clarifier → Planner → Stress Tester → Synthesizer** — orchestrated with **LangGraph**. The output is practical, realistic, aware of risks, and resistant to manipulation.
+ForgeFlow is a structured AI-powered system that turns vague ideas into clear, actionable execution plans. Its five-agent pipeline — **Assessor → Clarifier → Planner → Stress Tester → Synthesizer** — is orchestrated with **LangGraph**. The output is practical, realistic, aware of risks, and resistant to manipulation.
 
 **Stack:** Next.js · Express · OpenAI GPT-4o / Claude / Gemini · LangGraph
 

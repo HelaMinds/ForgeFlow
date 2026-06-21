@@ -1,4 +1,8 @@
 const AGENT_META = {
+  assessor: {
+    agent: 'Assessor',
+    role: 'Evaluate feasibility, risks, and framing before planning',
+  },
   clarifier: {
     agent: 'Clarifier',
     role: 'Structure the vague idea into goals, constraints, and questions',
@@ -24,6 +28,17 @@ const AGENT_META = {
     role: 'Apply your conversational edits to the plan',
   },
 };
+
+function buildAssessorTrace(assessment) {
+  return buildTraceEntry('assessor', {
+    summary: assessment.recommendation || `Idea assessed with a ${assessment.verdict || 'completed'} verdict`,
+    highlights: [
+      assessment.verdict ? `Verdict: ${assessment.verdict.replaceAll('_', ' ')}` : null,
+      `${assessment.concerns?.length || 0} concerns identified`,
+      assessment.saferAlternative ? 'Safer alternative proposed' : null,
+    ].filter(Boolean),
+  });
+}
 
 function buildTraceEntry(stage, { summary, highlights = [] }) {
   const meta = AGENT_META[stage];
@@ -118,6 +133,7 @@ function buildReasoning({ clarifiedSnapshot, plan, stressTest }) {
 }
 
 module.exports = {
+  buildAssessorTrace,
   buildClarifierTrace,
   buildPlannerTrace,
   buildStressTesterTrace,

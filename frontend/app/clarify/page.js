@@ -35,6 +35,7 @@ export default function ClarifyPage() {
         idea: clarifyData.idea,
         answers,
         clarified: clarifyData.clarified,
+        assessment: clarifyData.assessment,
       });
       sessionStorage.setItem('forgeflow-result', JSON.stringify(result));
       sessionStorage.removeItem('forgeflow-clarify');

@@ -70,7 +70,7 @@ export default function HomePage() {
         <div className="flex items-center gap-2">
           <span className="hidden items-center gap-2 rounded-full border border-slate-200 bg-white/70 px-3 py-1.5 text-xs font-medium text-slate-600 shadow-soft backdrop-blur dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 sm:inline-flex">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            4-agent AI pipeline
+            5-agent AI pipeline
           </span>
           <ThemeToggle />
         </div>
@@ -94,14 +94,14 @@ export default function HomePage() {
           </h1>
 
           <p className="mt-5 max-w-xl text-balance text-lg leading-relaxed text-slate-600 dark:text-slate-300">
-            Four specialized AI agents — Clarifier, Planner, Stress Tester, and Synthesizer —
+            Five specialized AI agents — Assessor, Clarifier, Planner, Stress Tester, and Synthesizer —
             work in sequence to structure your thinking. You answer the hard questions; the agents
             do the analysis.
           </p>
 
           <dl className="mt-8 grid max-w-md grid-cols-3 gap-4">
             {[
-              { value: '4', label: 'AI agents' },
+              { value: '5', label: 'AI agents' },
               { value: '5–8', label: 'Plan phases' },
               { value: '~1 min', label: 'To first draft' },
             ].map((stat) => (
@@ -143,7 +143,7 @@ export default function HomePage() {
               <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">
                 The pipeline
               </p>
-              <PipelineTrace trace={[]} activeStage="clarifier" compact />
+              <PipelineTrace trace={[]} activeStage="assessor" compact />
             </div>
 
             <InputBox onSubmit={handleSubmit} loading={loading} />
@@ -166,6 +166,16 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+      <footer className="mt-12 border-t border-slate-200 py-6 text-center text-sm text-slate-500 dark:border-slate-800 dark:text-slate-400">
+        <a
+          href="https://github.com/HelaMinds/ForgeFlow"
+          target="_blank"
+          rel="noreferrer"
+          className="font-semibold text-orange-600 transition hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300"
+        >
+          HelaMinds/ForgeFlow
+        </a>
+      </footer>
     </main>
   );
 }

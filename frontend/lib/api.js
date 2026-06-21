@@ -59,13 +59,13 @@ export async function clarifyIdea({ idea, ideaType }) {
   });
 }
 
-export async function generatePlan({ idea, answers, clarified }) {
+export async function generatePlan({ idea, answers, clarified, assessment }) {
   return request('/api/idea/plan', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ idea, answers, clarified }),
+    body: JSON.stringify({ idea, answers, clarified, assessment }),
   });
 }
 

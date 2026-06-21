@@ -92,6 +92,7 @@ router.post('/plan', async (req, res, next) => {
       idea: validation.idea,
       answers: validation.answers,
       clarified: validation.clarified,
+      assessment: req.body.assessment,
     });
     return res.json(result);
   } catch (error) {
