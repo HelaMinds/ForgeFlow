@@ -22,8 +22,8 @@ const RESULT_STORAGE_KEY = 'forgeflow-result';
 function SectionIntro({ title, description }) {
   return (
     <div className="mb-6">
-      <h2 className="text-xl font-semibold text-slate-100">{title}</h2>
-      {description ? <p className="mt-2 text-sm text-slate-400">{description}</p> : null}
+      <h2 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">{title}</h2>
+      {description ? <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">{description}</p> : null}
     </div>
   );
 }
@@ -143,11 +143,13 @@ export default function ResultPage() {
 
   if (!result) {
     return (
-      <main className="mx-auto max-w-4xl px-6 py-16">
-        <p className="text-slate-400">No result found.</p>
-        <Link href="/" className="mt-4 inline-block text-orange-400 hover:underline">
-          Start over
-        </Link>
+      <main className="mx-auto max-w-3xl px-6 py-20">
+        <div className="card p-8 text-center">
+          <p className="text-slate-600 dark:text-slate-400">No result found.</p>
+          <Link href="/" className="btn-primary mt-5 inline-flex">
+            Start over
+          </Link>
+        </div>
       </main>
     );
   }
@@ -159,13 +161,11 @@ export default function ResultPage() {
   const totalDuration = finalPlan.timeline?.totalDuration;
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-950">
-      <div className="mx-auto w-full max-w-[1600px]">
-        <ResultTopBar finalPlan={finalPlan} clarified={clarified} idea={idea} />
-      </div>
+    <div className="flex min-h-screen flex-col">
+      <ResultTopBar finalPlan={finalPlan} clarified={clarified} idea={idea} />
 
       <div className="mx-auto flex w-full max-w-[1600px] flex-1 flex-col lg:flex-row lg:overflow-hidden">
-        <aside className="hidden w-56 shrink-0 lg:flex lg:flex-col">
+        <aside className="hidden w-60 shrink-0 border-r border-slate-200 dark:border-slate-800 lg:flex lg:flex-col">
           <ResultSidebar
             sections={sections}
             activeId={activeSection}
@@ -174,7 +174,7 @@ export default function ResultPage() {
         </aside>
 
         <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
-          <main className="min-h-0 flex-1 overflow-y-auto px-4 py-6 sm:px-6 lg:max-h-[calc(100vh-64px)]">
+          <main className="min-h-0 flex-1 overflow-y-auto px-4 py-6 sm:px-6 lg:max-h-[calc(100vh-65px)]">
             <div className="mb-4 lg:hidden">
               <ResultSidebar
                 sections={sections}
@@ -185,7 +185,7 @@ export default function ResultPage() {
             </div>
 
             {activeSection === 'overview' ? (
-              <div className="space-y-6">
+              <div className="mx-auto max-w-4xl space-y-6 animate-fade-in">
                 <PlanHero
                   finalPlan={finalPlan}
                   clarified={clarified}
@@ -201,7 +201,7 @@ export default function ResultPage() {
             ) : null}
 
             {activeSection === 'pipeline' ? (
-              <div className="space-y-8">
+              <div className="mx-auto max-w-4xl space-y-8 animate-fade-in">
                 <SectionIntro
                   title="How this plan was built"
                   description="Four agents ran in sequence. Here is what each one produced and why."
@@ -212,19 +212,24 @@ export default function ResultPage() {
             ) : null}
 
             {activeSection === 'timeline' ? (
-              <div>
+              <div className="mx-auto max-w-4xl animate-fade-in">
                 <SectionIntro
                   title="Step-by-step timeline"
                   description="Follow these phases in order. Complete each milestone before moving on."
                 />
                 {selectedPath ? (
-                  <div className="mb-6 rounded-lg border border-sky-500/25 bg-sky-500/10 px-4 py-3">
-                    <p className="text-sm text-sky-300">
-                      Plan shaped for: <span className="font-semibold">{selectedPath.title}</span>
-                    </p>
-                    {pathApplyMessage ? (
-                      <p className="mt-1 text-xs text-slate-400">{pathApplyMessage}</p>
-                    ) : null}
+                  <div className="mb-6 flex items-start gap-2.5 rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-3 dark:border-indigo-500/30 dark:bg-indigo-500/10">
+                    <svg viewBox="0 0 20 20" fill="currentColor" className="mt-0.5 h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400" aria-hidden="true">
+                      <path fillRule="evenodd" d="M9.965 2.022a.75.75 0 0 1 .07 1.058l-.07.07-1.5 1.5a.75.75 0 0 0 1.06 1.06l1.5-1.5a2.25 2.25 0 1 0-3.182-3.182l-1.5 1.5a.75.75 0 0 0 1.06 1.06l1.5-1.5a.75.75 0 0 1 1.062 0ZM12.5 7.5a.75.75 0 0 0-1.06 0l-3.94 3.94a.75.75 0 1 0 1.06 1.06l3.94-3.94a.75.75 0 0 0 0-1.06Z" clipRule="evenodd" />
+                    </svg>
+                    <div>
+                      <p className="text-sm text-indigo-800 dark:text-indigo-200">
+                        Plan shaped for: <span className="font-semibold">{selectedPath.title}</span>
+                      </p>
+                      {pathApplyMessage ? (
+                        <p className="mt-0.5 text-xs text-indigo-600 dark:text-indigo-300">{pathApplyMessage}</p>
+                      ) : null}
+                    </div>
                   </div>
                 ) : null}
                 <TimelineFlow roadmap={finalPlan.roadmap} timeline={finalPlan.timeline} />
@@ -232,7 +237,7 @@ export default function ResultPage() {
             ) : null}
 
             {activeSection === 'decisions' ? (
-              <div>
+              <div className="mx-auto max-w-4xl animate-fade-in">
                 <SectionIntro
                   title="Choose your strategic path"
                   description="Pick an approach — the plan will adapt your timeline, tasks, and first action to match."
@@ -253,7 +258,7 @@ export default function ResultPage() {
             ) : null}
 
             {activeSection === 'risks' ? (
-              <div className="space-y-6">
+              <div className="mx-auto max-w-4xl space-y-6 animate-fade-in">
                 <SectionIntro
                   title="Risks & mitigations"
                   description="Known challenges flagged by the Stress Tester agent and how to handle them."
@@ -266,17 +271,15 @@ export default function ResultPage() {
                   </div>
                 ) : null}
                 {normalizeReasoningList(stressTest.weakAssumptions).length > 0 ? (
-                  <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
-                    <p className="text-sm font-medium text-slate-300">Weak assumptions to validate</p>
+                  <div className="card p-5">
+                    <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">Weak assumptions to validate</p>
                     <ul className="mt-3 space-y-2">
                       {normalizeReasoningList(stressTest.weakAssumptions).map((item, index) => (
                         <li
                           key={`weak-${index}-${item}`}
-                          className="flex items-start gap-2 text-sm text-slate-400"
+                          className="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-400"
                         >
-                          <span aria-hidden="true" className="mt-1.5 text-orange-400/70">
-                            •
-                          </span>
+                          <span aria-hidden="true" className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" />
                           {item}
                         </li>
                       ))}
@@ -287,20 +290,30 @@ export default function ResultPage() {
             ) : null}
 
             {activeSection === 'next' ? (
-              <div className="space-y-6">
+              <div className="mx-auto max-w-4xl space-y-6 animate-fade-in">
                 <SectionIntro
                   title="Start here"
                   description="Your first concrete move — do this before anything else."
                 />
-                <div className="rounded-xl border border-orange-500/30 bg-orange-500/10 p-6">
-                  <p className="text-base leading-relaxed text-slate-100">{finalPlan.firstAction}</p>
+                <div className="relative overflow-hidden rounded-2xl border border-orange-200 bg-gradient-to-br from-orange-50 to-amber-50 p-6 shadow-card dark:border-orange-500/30 dark:from-orange-500/10 dark:to-amber-500/5">
+                  <div className="flex items-start gap-3">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-gradient text-white shadow-glow">
+                      <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5" aria-hidden="true">
+                        <path d="M11.983 1.907a.75.75 0 0 0-1.292-.657l-8.5 9.5A.75.75 0 0 0 2.75 12h6.572l-1.305 6.093a.75.75 0 0 0 1.292.657l8.5-9.5A.75.75 0 0 0 17.25 8h-6.572l1.305-6.093Z" />
+                      </svg>
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-widest text-orange-700 dark:text-orange-300">Your first action</p>
+                      <p className="mt-1 text-base leading-relaxed text-slate-800 dark:text-slate-100">{finalPlan.firstAction}</p>
+                    </div>
+                  </div>
                 </div>
                 <ResponsibleAiNotice confidenceNote={finalPlan.confidenceNote} />
               </div>
             ) : null}
           </main>
 
-          <aside className="h-80 shrink-0 border-t border-slate-800 lg:h-auto lg:w-80 lg:border-l lg:border-t-0">
+          <aside className="h-96 shrink-0 lg:h-auto lg:w-80 xl:w-96">
             <PlanChatPanel result={result} onPlanUpdate={handlePlanUpdate} />
           </aside>
         </div>

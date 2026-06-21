@@ -36,16 +36,19 @@ export function ensureChoiceQuestions(questions) {
   return questions.map((question, index) => {
     const id = question.id || `q${index + 1}`;
     const text = question.text || '';
-    const options =
+    const fromQuestion =
       Array.isArray(question.options) && question.options.length >= 2
-        ? question.options
+        ? question.options.filter(Boolean)
         : inferDefaultOptions(id, text);
+
+    // Strip any model-supplied "Other" so the UI's single free-text choice is the only one.
+    const options = fromQuestion.filter((option) => !/^(other|something else|none of)/i.test(option));
 
     return {
       id,
       text,
       type: 'choice',
-      options: options.slice(0, 5),
+      options: options.slice(0, 4),
     };
   });
 }
