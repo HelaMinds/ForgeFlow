@@ -1,4 +1,5 @@
 const { clarifyIdea } = require('../agents/clarifier');
+const { assessIdea } = require('../agents/assessor');
 const { runPlanPipeline } = require('./langgraphPipeline');
 const {
   buildClarifierTrace,
@@ -48,12 +49,17 @@ function snapshotClarified(clarified) {
 }
 
 async function runClarify({ idea, ideaType }) {
-  const clarified = await clarifyIdea(idea, ideaType);
+  // Assessor and Clarifier both only need the raw idea, so run them together.
+  const [assessment, clarified] = await Promise.all([
+    assessIdea(idea, ideaType),
+    clarifyIdea(idea, ideaType),
+  ]);
   const pipelineTrace = [buildClarifierTrace(clarified)];
 
   return {
     idea,
     ideaType: ideaType || null,
+    assessment,
     clarified,
     pipelineTrace,
   };

@@ -42,6 +42,7 @@ export default function HomePage() {
         JSON.stringify({
           idea: result.idea,
           ideaType: result.ideaType,
+          assessment: result.assessment || null,
           clarified: result.clarified,
           pipelineTrace: result.pipelineTrace || [],
         }),
